@@ -21,7 +21,7 @@ export default function HomePage() {
     <LandscapeGuard>
       <main className="relative flex flex-col min-h-screen">
         {/* ── Imagen de cabecera ── */}
-        <div className="relative w-full h-[320px] overflow-hidden">
+        <div className="relative w-full h-[420px] overflow-hidden">
           <Image
             src="/images/header-residencial-sanesteban.jpg"
             alt="Residencia de Mayores — Vista del jardín"
@@ -34,8 +34,8 @@ export default function HomePage() {
         </div>
 
         {/* ── Tarjeta flotante central ── */}
-        <div className="flex-1 flex items-start justify-center -mt-24 px-6 pb-10">
-          <div className="card w-full max-w-lg p-10 flex flex-col items-center text-center">
+        <div className="flex-1 flex items-start justify-center -mt-36 px-6 pb-10">
+          <div className="card w-full max-w-xl p-12 flex flex-col items-center text-center">
             {/* Logo */}
             <div className="w-28 h-28 relative mb-6 rounded-2xl overflow-hidden shadow-md">
               <Image
