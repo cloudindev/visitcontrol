@@ -1,65 +1,92 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import LandscapeGuard from "@/components/LandscapeGuard";
+
+/**
+ * Pantalla de Bienvenida (Home).
+ *
+ * Punto de entrada del kiosco. Ofrece dos flujos:
+ * 1. Primera visita → /registro
+ * 2. Visitante recurrente → /consulta
+ *
+ * No se monta InactivityGuard aquí porque esta ES la pantalla destino
+ * del timeout de inactividad.
+ */
+export default function HomePage() {
+  const router = useRouter();
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <LandscapeGuard>
+      <main className="relative flex flex-col min-h-screen">
+        {/* ── Imagen de cabecera ── */}
+        <div className="relative w-full h-[320px] overflow-hidden">
+          <Image
+            src="/images/header.jpg"
+            alt="Residencia de Mayores — Vista del jardín"
+            fill
+            className="object-cover"
+            priority
+          />
+          {/* Degradado inferior para fusionar con el contenido */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-surface" />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* ── Tarjeta flotante central ── */}
+        <div className="flex-1 flex items-start justify-center -mt-24 px-6 pb-10">
+          <div className="card w-full max-w-lg p-10 flex flex-col items-center text-center">
+            {/* Logo */}
+            <div className="w-28 h-28 relative mb-6 rounded-2xl overflow-hidden shadow-md">
+              <Image
+                src="/images/logo.jpg"
+                alt="Logo Residencia de Mayores"
+                fill
+                className="object-contain bg-white"
+                priority
+              />
+            </div>
+
+            {/* Título y subtítulo */}
+            <h1 className="text-4xl font-bold text-primary font-serif mb-2">
+              Bienvenido
+            </h1>
+            <p className="text-lg text-gray-500 mb-10">
+              Por favor registra tu visita
+            </p>
+
+            {/* Botones de acción */}
+            <div className="w-full flex flex-col gap-4">
+              <button
+                id="btn-primera-visita"
+                onClick={() => router.push("/registro")}
+                className="btn btn-primary w-full text-xl"
+              >
+                Es mi primera visita
+                <span aria-hidden="true">→</span>
+              </button>
+
+              <button
+                id="btn-visita-recurrente"
+                onClick={() => router.push("/consulta")}
+                className="btn btn-secondary w-full text-xl"
+              >
+                Ya me he registrado anteriormente
+              </button>
+            </div>
+          </div>
         </div>
       </main>
-    </div>
+    </LandscapeGuard>
   );
 }
+
+/*
+ * ─── Decisión técnica ───
+ * La tarjeta se desplaza -mt-24 para solaparse con la imagen de cabecera,
+ * creando el efecto de "tarjeta flotante" descrito en los requisitos.
+ *
+ * Se usa next/image con priority para LCP optimization en la cabecera.
+ * Los botones tienen min-height de 56px (via clase .btn) para
+ * facilitar la interacción táctil a usuarios mayores.
+ */

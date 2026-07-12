@@ -1,26 +1,229 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap");
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* ─────────────────────────────────────────────────────────
+ * Theme tokens — Tailwind CSS v4 inline theme
+ * Paleta: primary azul #1E40AF, secondary verde #3F7A3F,
+ *         surface gris #F1F2F4
+ * ─────────────────────────────────────────────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: #1E40AF;
+  --color-primary-light: #3B62D0;
+  --color-primary-dark: #162F85;
+  --color-secondary: #3F7A3F;
+  --color-secondary-light: #5A9C5A;
+  --color-secondary-dark: #2D5A2D;
+  --color-surface: #F1F2F4;
+  --color-surface-dark: #E2E4E8;
+  --color-card: #FFFFFF;
+  --color-danger: #DC2626;
+
+  --font-serif: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+
+/* ─────────────────────────────────────────────────────────
+ * Global base
+ * ─────────────────────────────────────────────────────── */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-surface);
+  color: #1a1a2e;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─────────────────────────────────────────────────────────
+ * Kiosk mode — disable zoom, text selection, pull-to-refresh
+ * ─────────────────────────────────────────────────────── */
+html {
+  touch-action: manipulation;
+  -ms-touch-action: manipulation;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: auto;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  overscroll-behavior-y: contain;
+}
+
+/* Allow text selection only in input fields */
+input, textarea {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* ─────────────────────────────────────────────────────────
+ * Signature canvas — prevent scroll/zoom while drawing
+ * ─────────────────────────────────────────────────────── */
+canvas.signature-canvas {
+  touch-action: none;
+  -ms-touch-action: none;
+}
+
+/* ─────────────────────────────────────────────────────────
+ * Form field labels — small caps gray
+ * ─────────────────────────────────────────────────────── */
+.field-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+/* ─────────────────────────────────────────────────────────
+ * Smooth card shadow
+ * ─────────────────────────────────────────────────────── */
+.card {
+  background: var(--color-card);
+  border-radius: 1rem;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* ─────────────────────────────────────────────────────────
+ * Button base — large touch targets for elderly users
+ * ─────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 56px;
+  padding: 0.875rem 2rem;
+  border-radius: 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+}
+.btn-primary:hover {
+  background: var(--color-primary-light);
+}
+.btn-primary:disabled {
+  background: #93a3c8;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-secondary {
+  background: var(--color-secondary);
+  color: white;
+}
+.btn-secondary:hover {
+  background: var(--color-secondary-light);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+}
+.btn-outline:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+/* ─────────────────────────────────────────────────────────
+ * Input fields — large for touch
+ * ─────────────────────────────────────────────────────── */
+.input-field {
+  display: block;
+  width: 100%;
+  min-height: 56px;
+  padding: 0.875rem 1rem;
+  border: 2px solid #d1d5db;
+  border-radius: 0.75rem;
+  font-size: 1.125rem;
+  font-family: var(--font-sans);
+  background: white;
+  color: #1a1a2e;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
+
+.input-field::placeholder {
+  color: #9ca3af;
+}
+
+.input-field:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.15);
+}
+
+.input-field.input-error {
+  border-color: var(--color-danger);
+}
+
+.input-field.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+/* ─────────────────────────────────────────────────────────
+ * Check animation for success screen
+ * ─────────────────────────────────────────────────────── */
+@keyframes check-draw {
+  0% { stroke-dashoffset: 100; }
+  100% { stroke-dashoffset: 0; }
+}
+
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes progress-shrink {
+  0% { width: 100%; }
+  100% { width: 0%; }
+}
+
+.animate-check-draw {
+  animation: check-draw 0.6s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+
+.animate-progress-shrink {
+  animation: progress-shrink 8s linear forwards;
+}
+
+/* ─────────────────────────────────────────────────────────
+ * Scrollbar minimal
+ * ─────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #c4c8d0;
+  border-radius: 3px;
 }
