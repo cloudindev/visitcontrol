@@ -48,8 +48,8 @@ export default function HomePage() {
             </div>
 
             {/* Título y subtítulo */}
-            <h1 className="text-4xl font-bold text-primary font-serif mb-2">
-              Bienvenido
+            <h1 className="text-[65px] leading-tight font-bold text-primary font-serif mb-2">
+              Bienvenido/a
             </h1>
             <p className="text-lg text-gray-500 mb-10">
               Por favor registra tu visita
