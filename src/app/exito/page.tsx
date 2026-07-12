@@ -53,7 +53,7 @@ export default function ExitoPage() {
           {/* Logo */}
           <div className="w-24 h-24 relative mx-auto mb-8 rounded-2xl overflow-hidden shadow-lg">
             <Image
-              src="/images/logo.jpg"
+              src="/images/logo-residencial-sanesteban.png"
               alt="Logo Residencia de Mayores"
               fill
               className="object-contain bg-white"

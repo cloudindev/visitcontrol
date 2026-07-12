@@ -23,7 +23,7 @@ export default function HomePage() {
         {/* ── Imagen de cabecera ── */}
         <div className="relative w-full h-[320px] overflow-hidden">
           <Image
-            src="/images/header.jpg"
+            src="/images/header-residencial-sanesteban.jpg"
             alt="Residencia de Mayores — Vista del jardín"
             fill
             className="object-cover"
@@ -39,7 +39,7 @@ export default function HomePage() {
             {/* Logo */}
             <div className="w-28 h-28 relative mb-6 rounded-2xl overflow-hidden shadow-md">
               <Image
-                src="/images/logo.jpg"
+                src="/images/logo-residencial-sanesteban.png"
                 alt="Logo Residencia de Mayores"
                 fill
                 className="object-contain bg-white"
