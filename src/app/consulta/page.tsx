@@ -100,7 +100,7 @@ export default function ConsultaPage() {
               </div>
 
               <h1 className="text-3xl font-bold text-primary font-serif mb-2">
-                Consulta de Registro
+                Introduce tu DNI
               </h1>
               <p className="text-gray-500 text-lg">
                 Ingrese el número de documento para acceder a la información
