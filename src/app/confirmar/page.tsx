@@ -205,7 +205,7 @@ function ConfirmarContent() {
                   />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-800 font-serif">
+              <h2 className="text-3xl font-bold text-gray-800 font-serif">
                 Datos del Visitante
               </h2>
             </div>
@@ -236,7 +236,7 @@ function ConfirmarContent() {
 
           {/* ── Columna derecha: firma + confirmación ── */}
           <div className="card p-8">
-            <h2 className="text-2xl font-bold text-gray-800 font-serif mb-6">
+            <h2 className="text-3xl font-bold text-gray-800 font-serif mb-6">
               Confirmar Visita
             </h2>
 

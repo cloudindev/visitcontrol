@@ -99,7 +99,7 @@ export default function ConsultaPage() {
                 </svg>
               </div>
 
-              <h1 className="text-3xl font-bold text-primary font-serif mb-2">
+              <h1 className="text-5xl font-bold text-primary font-serif mb-2">
                 Introduce tu DNI
               </h1>
               <p className="text-gray-500 text-lg">
