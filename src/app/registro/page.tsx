@@ -135,24 +135,24 @@ export default function RegistroPage() {
   return (
     <LandscapeGuard>
       <InactivityGuard>
-        <main className="min-h-screen flex items-center justify-center px-6 py-8">
-          <div className="card w-full max-w-3xl p-8">
+        <main className="min-h-screen flex items-center justify-center px-6 py-4">
+          <div className="card w-full max-w-5xl p-6">
             {/* Navegación */}
             <BackButton />
 
             {/* Cabecera */}
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-primary font-serif mb-2">
-                Formulario de Registro
+            <div className="text-center mb-4">
+              <h1 className="text-3xl font-bold text-primary font-serif mb-1">
+                Registro de visita
               </h1>
-              <p className="text-gray-500 text-lg">
+              <p className="text-gray-500">
                 Complete los siguientes datos para registrar su primera visita
               </p>
             </div>
 
             <form onSubmit={handleSubmit} noValidate>
-              {/* Nombre + Apellidos en dos columnas */}
-              <div className="grid grid-cols-2 gap-6 mb-6">
+              {/* Nombre + Apellidos + DNI en una fila */}
+              <div className="grid grid-cols-3 gap-4 mb-4">
                 <div>
                   <label htmlFor="nombre" className="field-label">
                     Nombre
@@ -188,41 +188,40 @@ export default function RegistroPage() {
                     <p className="text-danger text-sm mt-1">{errors.apellidos}</p>
                   )}
                 </div>
-              </div>
 
-              {/* DNI */}
-              <div className="mb-6">
-                <label htmlFor="dni" className="field-label">
-                  DNI / Documento de identidad
-                </label>
-                <input
-                  id="dni"
-                  type="text"
-                  value={form.dni}
-                  onChange={handleChange("dni")}
-                  className={`input-field ${errors.dni ? "input-error" : ""}`}
-                  placeholder="Ej: 12345678X"
-                  autoComplete="off"
-                  inputMode="text"
-                />
-                {errors.dni && (
-                  <p className="text-danger text-sm mt-1">{errors.dni}</p>
-                )}
-                {dniExistsError && (
-                  <p className="text-sm mt-2 text-gray-600">
-                    ¿Ya se ha registrado antes?{" "}
-                    <Link
-                      href="/consulta"
-                      className="text-primary underline font-medium"
-                    >
-                      Acceda como visitante recurrente →
-                    </Link>
-                  </p>
-                )}
+                <div>
+                  <label htmlFor="dni" className="field-label">
+                    DNI / Documento
+                  </label>
+                  <input
+                    id="dni"
+                    type="text"
+                    value={form.dni}
+                    onChange={handleChange("dni")}
+                    className={`input-field ${errors.dni ? "input-error" : ""}`}
+                    placeholder="Ej: 12345678X"
+                    autoComplete="off"
+                    inputMode="text"
+                  />
+                  {errors.dni && (
+                    <p className="text-danger text-sm mt-1">{errors.dni}</p>
+                  )}
+                  {dniExistsError && (
+                    <p className="text-sm mt-1 text-gray-600">
+                      ¿Ya registrado?{" "}
+                      <Link
+                        href="/consulta"
+                        className="text-primary underline font-medium"
+                      >
+                        Acceda aquí →
+                      </Link>
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Firma digital */}
-              <div className="mb-6">
+              <div className="mb-4">
                 <SignaturePad
                   ref={signatureRef}
                   onSignatureChange={(isEmpty) => {
@@ -233,13 +232,13 @@ export default function RegistroPage() {
                   }}
                 />
                 {errors.firma && (
-                  <p className="text-danger text-sm mt-2">{errors.firma}</p>
+                  <p className="text-danger text-sm mt-1">{errors.firma}</p>
                 )}
               </div>
 
               {/* Error general */}
               {errors.general && (
-                <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-danger text-center">
+                <div className="mb-3 p-3 rounded-xl bg-red-50 border border-red-200 text-danger text-center text-sm">
                   {errors.general}
                 </div>
               )}
