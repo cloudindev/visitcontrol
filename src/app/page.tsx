@@ -19,23 +19,21 @@ export default function HomePage() {
 
   return (
     <LandscapeGuard>
-      <main className="relative flex flex-col min-h-screen">
-        {/* ── Imagen de cabecera ── */}
-        <div className="relative w-full h-[420px] overflow-hidden">
-          <Image
-            src="/images/header-residencial-sanesteban.jpg"
-            alt="Residencia de Mayores — Vista del jardín"
-            fill
-            className="object-cover"
-            priority
-          />
-          {/* Degradado inferior para fusionar con el contenido */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-surface" />
-        </div>
+      <main className="relative min-h-screen">
+        {/* ── Imagen de fondo a pantalla completa ── */}
+        <Image
+          src="/images/header-residencial-sanesteban.jpg"
+          alt="Residencia de Mayores — Vista del jardín"
+          fill
+          className="object-cover"
+          priority
+        />
+        {/* Overlay oscuro suave para legibilidad */}
+        <div className="absolute inset-0 bg-black/20" />
 
-        {/* ── Tarjeta flotante central ── */}
-        <div className="flex-1 flex items-start justify-center -mt-36 px-6 pb-10">
-          <div className="card w-full max-w-xl p-12 flex flex-col items-center text-center">
+        {/* ── Tarjeta flotante centrada sobre la imagen ── */}
+        <div className="relative z-10 flex items-center justify-center min-h-screen px-6 py-8">
+          <div className="card w-full max-w-xl p-12 flex flex-col items-center text-center shadow-2xl">
             {/* Logo */}
             <div className="w-28 h-28 relative mb-6 rounded-2xl overflow-hidden shadow-md">
               <Image
