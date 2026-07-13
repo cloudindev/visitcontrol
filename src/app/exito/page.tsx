@@ -116,16 +116,6 @@ export default function ExitoPage() {
               Redirigiendo al inicio automáticamente...
             </p>
           </div>
-
-          {/* Botón manual */}
-          <button
-            id="btn-volver-inicio"
-            onClick={handleGoHome}
-            className="btn btn-outline"
-          >
-            Volver al Inicio
-            <span aria-hidden="true">→</span>
-          </button>
         </div>
       </main>
     </LandscapeGuard>
