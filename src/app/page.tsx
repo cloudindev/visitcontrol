@@ -12,7 +12,7 @@ const BACKGROUND_IMAGES = [
 ] as const;
 
 /** Intervalo de alternancia en milisegundos (30s) */
-const SWAP_INTERVAL_MS = 30_000;
+const SWAP_INTERVAL_MS = 15_000;
 
 /**
  * Pantalla de Bienvenida (Home).
