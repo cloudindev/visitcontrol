@@ -3,10 +3,10 @@
 import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import LandscapeGuard from "@/components/LandscapeGuard";
 import InactivityGuard from "@/components/InactivityGuard";
 import SignaturePad from "@/components/SignaturePad";
-import BackButton from "@/components/BackButton";
 import { validateDocumento } from "@/lib/validators";
 import { API_BASE } from "@/lib/api";
 
@@ -136,10 +136,19 @@ export default function RegistroPage() {
   return (
     <LandscapeGuard>
       <InactivityGuard>
-        <main className="min-h-screen flex items-center justify-center px-6 py-4">
+        <main className="min-h-screen flex flex-col items-center justify-center px-6 py-4">
+          {/* Logo como enlace a Home */}
+          <Link href="/" className="mb-4">
+            <Image
+              src="/images/logo-residencial-sanesteban.png"
+              alt="Logo Residencia de Mayores"
+              width={90}
+              height={90}
+              className="rounded-2xl"
+            />
+          </Link>
+
           <div className="card w-full max-w-5xl p-6">
-            {/* Navegación */}
-            <BackButton />
 
             {/* Cabecera */}
             <div className="text-center mb-8">
