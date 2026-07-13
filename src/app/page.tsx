@@ -59,46 +59,60 @@ export default function HomePage() {
         {/* Overlay oscuro suave para legibilidad */}
         <div className="absolute inset-0 bg-black/20" />
 
-        {/* ── Tarjeta flotante centrada sobre la imagen ── */}
-        <div className="relative z-10 flex items-center justify-center min-h-screen px-6 py-8">
-          <div className="card w-full max-w-xl pt-8 pb-12 px-12 flex flex-col items-center text-center shadow-2xl">
-            {/* Logo */}
-            <div className="w-28 h-28 relative mb-2 rounded-2xl overflow-hidden">
-              <Image
-                src="/images/logo-residencial-sanesteban.png"
-                alt="Logo Residencia de Mayores"
-                fill
-                className="object-contain bg-white"
-                priority
-              />
+        {/* ── Tarjeta flotante + QR ── */}
+        <div className="relative z-10 flex items-start justify-center min-h-screen px-6 pt-10 md:pt-14 pb-8">
+          <div className="relative flex flex-col items-center">
+            {/* Card principal */}
+            <div className="card w-full max-w-xl pt-8 pb-14 px-12 flex flex-col items-center text-center shadow-2xl">
+              {/* Logo */}
+              <div className="w-28 h-28 relative mb-2 rounded-2xl overflow-hidden">
+                <Image
+                  src="/images/logo-residencial-sanesteban.png"
+                  alt="Logo Residencia de Mayores"
+                  fill
+                  className="object-contain bg-white"
+                  priority
+                />
+              </div>
+
+              {/* Título y subtítulo */}
+              <h1 className="text-4xl md:text-[65px] leading-tight font-bold text-primary font-serif mb-1">
+                Bienvenido/a
+              </h1>
+              <p className="text-lg text-gray-500 mb-12">
+                Por favor registra tu visita
+              </p>
+
+              {/* Botones de acción */}
+              <div className="w-full flex flex-col gap-4">
+                <button
+                  id="btn-primera-visita"
+                  onClick={() => router.push("/registro")}
+                  className="btn btn-primary w-full text-xl"
+                >
+                  Es mi primera visita
+                  <span aria-hidden="true">→</span>
+                </button>
+
+                <button
+                  id="btn-visita-recurrente"
+                  onClick={() => router.push("/consulta")}
+                  className="btn btn-secondary w-full text-xl"
+                >
+                  Ya me he registrado anteriormente
+                </button>
+              </div>
             </div>
 
-            {/* Título y subtítulo */}
-            <h1 className="text-4xl md:text-[65px] leading-tight font-bold text-primary font-serif mb-1">
-              Bienvenido/a
-            </h1>
-            <p className="text-lg text-gray-500 mb-12">
-              Por favor registra tu visita
-            </p>
-
-            {/* Botones de acción */}
-            <div className="w-full flex flex-col gap-4">
-              <button
-                id="btn-primera-visita"
-                onClick={() => router.push("/registro")}
-                className="btn btn-primary w-full text-xl"
-              >
-                Es mi primera visita
-                <span aria-hidden="true">→</span>
-              </button>
-
-              <button
-                id="btn-visita-recurrente"
-                onClick={() => router.push("/consulta")}
-                className="btn btn-secondary w-full text-xl"
-              >
-                Ya me he registrado anteriormente
-              </button>
+            {/* QR montado sobre el borde inferior del card */}
+            <div className="-mt-8 w-28 h-28 rounded-xl overflow-hidden shadow-lg border-4 border-white bg-white">
+              <Image
+                src="/images/qr.png"
+                alt="Código QR — Escanéame"
+                width={112}
+                height={112}
+                className="object-contain"
+              />
             </div>
           </div>
         </div>
