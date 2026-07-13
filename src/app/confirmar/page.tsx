@@ -183,7 +183,7 @@ function ConfirmarContent() {
   /* ── Contenido principal: 2 columnas ── */
   return (
     <main className="min-h-screen flex flex-col px-6 py-6">
-      <div className="w-full max-w-5xl mx-auto flex flex-col gap-4 flex-1">
+      <div className="w-full max-w-5xl mx-auto flex flex-col gap-4">
 
         {/* ── Fila superior: Volver + Datos del visitante ── */}
         <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
@@ -236,12 +236,12 @@ function ConfirmarContent() {
         </div>
 
         {/* ── Área de firma grande ── */}
-        <div className="card p-6 flex-1 flex flex-col">
+        <div className="card p-6 flex flex-col">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800 font-serif mb-4">
             Firme aquí
           </h2>
 
-          <form onSubmit={handleSubmit} noValidate className="flex flex-col flex-1">
+          <form onSubmit={handleSubmit} noValidate className="flex flex-col">
             {/* Firma — ocupa todo el espacio disponible */}
             <div className="flex-1 mb-4">
               <SignaturePad

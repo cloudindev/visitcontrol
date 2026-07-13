@@ -84,7 +84,7 @@ const SignaturePad = forwardRef<SignaturePadHandle, SignaturePadProps>(
         // Solo redimensionar si el ancho realmente cambió
         if (canvasElement.width !== Math.floor(rect.width)) {
           canvasElement.width = Math.floor(rect.width);
-          canvasElement.height = 200;
+          canvasElement.height = 300;
           // Limpiar tras resize (el canvas se resetea al cambiar dimensiones)
           canvas.clear();
           setSignatureIsEmpty(true);
@@ -143,13 +143,13 @@ const SignaturePad = forwardRef<SignaturePadHandle, SignaturePadProps>(
         </div>
 
         {/* Canvas container con placeholder */}
-        <div ref={containerRef} className="relative w-full" style={{ height: 200 }}>
+        <div ref={containerRef} className="relative w-full" style={{ height: 300 }}>
           <SignatureCanvas
             ref={sigCanvasRef}
             penColor="#1E40AF"
             canvasProps={{
               className: 'w-full rounded-lg cursor-crosshair',
-              style: { touchAction: 'none', height: 200 },
+              style: { touchAction: 'none', height: 300 },
             }}
             onBegin={handleBegin}
             onEnd={handleEnd}
