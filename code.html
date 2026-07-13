@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FlowVisit - Sistema de Gestión de Visitas</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "inverse-surface": "#2a313d",
+                  "on-secondary": "#ffffff",
+                  "on-tertiary-container": "#595a50",
+                  "on-tertiary-fixed": "#1a1c14",
+                  "error": "#ba1a1a",
+                  "tertiary": "#5e5f55",
+                  "on-secondary-container": "#616549",
+                  "on-primary": "#ffffff",
+                  "outline-variant": "#c1c9b5",
+                  "on-tertiary-fixed-variant": "#46483e",
+                  "surface-variant": "#dce2f3",
+                  "surface-container-lowest": "#ffffff",
+                  "secondary-fixed-dim": "#c5c9a8",
+                  "surface-container-high": "#e2e8f8",
+                  "surface-container-highest": "#dce2f3",
+                  "surface-tint": "#316b00",
+                  "surface-dim": "#d3daea",
+                  "on-background": "#151c27",
+                  "surface-container-low": "#f0f3ff",
+                  "primary-container": "#9de46c",
+                  "secondary": "#5d6145",
+                  "tertiary-fixed": "#e3e3d6",
+                  "primary": "#316b00",
+                  "on-primary-fixed": "#0a2000",
+                  "surface-bright": "#f9f9ff",
+                  "on-primary-fixed-variant": "#235100",
+                  "on-secondary-fixed": "#1a1d08",
+                  "surface-container": "#e7eefe",
+                  "on-tertiary": "#ffffff",
+                  "on-error": "#ffffff",
+                  "background": "#f9f9ff",
+                  "tertiary-container": "#d1d2c5",
+                  "tertiary-fixed-dim": "#c7c7bb",
+                  "on-surface-variant": "#41493a",
+                  "inverse-primary": "#93d963",
+                  "outline": "#717a68",
+                  "on-surface": "#151c27",
+                  "inverse-on-surface": "#ebf1ff",
+                  "on-primary-container": "#2e6600",
+                  "secondary-container": "#dfe3c0",
+                  "on-error-container": "#93000a",
+                  "secondary-fixed": "#e2e5c3",
+                  "surface": "#f9f9ff",
+                  "primary-fixed": "#aef67b",
+                  "primary-fixed-dim": "#93d963",
+                  "error-container": "#ffdad6",
+                  "on-secondary-fixed-variant": "#45492f"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.25rem",
+                  "lg": "0.5rem",
+                  "xl": "0.75rem",
+                  "full": "9999px"
+          },
+          "spacing": {
+                  "md": "24px",
+                  "sm": "12px",
+                  "gutter": "24px",
+                  "xs": "4px",
+                  "lg": "48px",
+                  "base": "8px",
+                  "xl": "80px",
+                  "margin": "32px"
+          },
+          "fontFamily": {
+                  "headline-xl": ["Hanken Grotesk"],
+                  "body-md": ["Inter"],
+                  "label-md": ["Inter"],
+                  "headline-lg-mobile": ["Hanken Grotesk"],
+                  "body-lg": ["Inter"],
+                  "headline-lg": ["Hanken Grotesk"],
+                  "headline-md": ["Hanken Grotesk"]
+          },
+          "fontSize": {
+                  "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                  "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                  "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                  "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                  "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                  "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                  "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .glass-card {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .hero-gradient {
+      background: radial-gradient(circle at top right, rgba(157, 228, 108, 0.15), transparent);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md">
+<!-- Navigation Shell (TopNavBar from JSON) -->
+<nav class="fixed top-0 w-full z-50 bg-surface dark:bg-inverse-surface shadow-sm h-20 transition-all duration-300">
+<div class="flex justify-between items-center h-full px-margin max-w-7xl mx-auto">
+<div class="flex items-center gap-2">
+<img alt="FlowVisit Logo" class="h-10 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVi3iVqeQNPIrRhUSMlfC_bOX9LjmRAZhec8AN9cBLEwFxlCj7VNhvAPxxLdAtvLDX_16y4Jo2KrM9SFbY_L6v0DKysSbPXwqUhe15_eo34DJa1wJKftdOfZCFm-1Ov_CUyLEE79No8mFOHq3SdeGy9R7PQB9KBglTLqn2J_orXF3g19y40rpmMV0MGJgRGaQ02hakd6TS5UQDtn5ffZQEC7j0nQ4qIaVstR172cb6VeT5-UcPTva0Ozi9Vw-F-otcGQ"/>
+</div>
+<!-- Desktop Links -->
+<div class="hidden md:flex items-center gap-lg">
+<a class="font-body-md text-body-md text-primary dark:text-primary-fixed font-bold border-b-2 border-primary py-2 transition-all" href="#">Features</a>
+<a class="font-body-md text-body-md text-on-surface dark:text-inverse-on-surface hover:text-primary transition-colors duration-200 py-2" href="#">Solutions</a>
+<a class="font-body-md text-body-md text-on-surface dark:text-inverse-on-surface hover:text-primary transition-colors duration-200 py-2" href="#">Pricing</a>
+</div>
+<div class="flex items-center gap-sm">
+<button class="transition-transform active:scale-95 px-6 py-2 rounded-full bg-primary text-on-primary font-label-md text-label-md hover:bg-on-primary-container transition-colors">
+          Iniciar sesión
+        </button>
+</div>
+</div>
+</nav>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative min-h-[90vh] flex items-center overflow-hidden hero-gradient">
+<div class="max-w-7xl mx-auto px-margin grid grid-cols-1 lg:grid-cols-2 gap-xl items-center w-full">
+<div class="relative z-10 space-y-md text-center lg:text-left">
+<span class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-secondary-container text-on-secondary-container text-label-md font-label-md">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            Seguridad y Control Total
+          </span>
+<h1 class="font-headline-xl text-headline-xl text-on-surface lg:pr-12">
+            Sistema de Gestión de <span class="text-primary">Visitas</span> para empresas
+          </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl mx-auto lg:mx-0">
+            Optimiza la recepción de tu empresa, mejora la seguridad y ofrece una experiencia impecable a tus visitantes con nuestra plataforma de última generación.
+          </p>
+<div class="flex flex-col sm:flex-row items-center gap-sm pt-base justify-center lg:justify-start">
+<button class="w-full sm:w-auto px-lg py-4 rounded-xl bg-primary-container text-on-primary-container font-bold text-body-md hover:shadow-lg transition-all active:scale-95">
+              Empezar ahora
+            </button>
+<button class="w-full sm:w-auto px-lg py-4 rounded-xl bg-white border-2 border-secondary text-secondary font-bold text-body-md hover:bg-secondary-container/10 transition-all active:scale-95">
+              Ver demo
+            </button>
+</div>
+<div class="pt-md flex items-center gap-md justify-center lg:justify-start opacity-70">
+<div class="flex -space-x-3">
+<div class="w-10 h-10 rounded-full border-2 border-white bg-surface" data-alt="A professional headshot of a corporate manager smiling in a bright office setting, using a minimalist light mode aesthetic. The lighting is soft and flattering, emphasizing a trustworthy and professional demeanor." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCJyGVk6t6KkrU4MZa85rNHj4n5BQG-BexsKg1VCdjGUDyggQMHvztw6P6NvRN5Va7QRSV6CAEGLtdZpTTLxO9_Fo6CUGfj28utCUZc0OVQHC2sOTr9XAdxJaDaYWLmPVDUducvtsr2V91Ew3NyA4ioJVlcxg9WgN9VB3E7zw9bNtP9wctbUMvixh0s7FkwECxYVqJGfZXUrHP81DNn-IXN8jndEDFFYgi-dv88K8I5Uaj5jjbshwoY')"></div>
+<div class="w-10 h-10 rounded-full border-2 border-white bg-surface" data-alt="A modern professional woman in a creative workspace, smiling confidently at the camera. The background is a blurred high-end office with soft green accents. High-quality corporate photography style." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBy3-hFXCxY4TGGTnQ2GwpSot6IxVtQB37-Dp9zXy5kDEAVDZkTU49EoZJS09zvVmtx_53m1I-BKNt9Ssc-Ikzz74uTL_4bNwrTpmX1jUEXAipf3jvYwCVFKmkXdkVLTwn8S63rfguosGQtWy_5A4CpPRkNIN9i3aQE_8H_bwaLiM17BZgpbc4LXuj8n0-VILASggYRxINGBJOzWJXrEuRF3Wxp3Mp9rrmTN9fFGcl0TVsvlv8w7N_7')"></div>
+<div class="w-10 h-10 rounded-full border-2 border-white bg-surface" data-alt="A portrait of a male tech executive with a clean, modern aesthetic. The lighting is crisp and clear, reflecting a high-tech corporate environment with a soft, warm background glow." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBH3uqGqhSpVlq-eBAm0Zx9JjdAcjeKGqAKZIpTsWQWEltItWLlxPbUBoiorN2v4pLuDHc6nFPXaNk8eC3JPXyzsKI2VsRlb09wDY00hQpcHu8tZFNNzxg0cwsqslI6gGvdHMtJKlPJuK_KWPAq6UWxOxaZtcdfNugk4MTHfAc81ocknopwuKSg7hfn9kjc-zS8sbQrSteKLd0Z4N6to6El4B3SjT3IgMFaED0-Mso64MjLAqNOKRsg')"></div>
+</div>
+<p class="text-label-md font-label-md">+500 empresas confían en FlowVisit</p>
+</div>
+</div>
+<div class="relative hidden lg:block h-[600px]">
+<div class="absolute inset-0 bg-primary/5 rounded-3xl -rotate-2 transform"></div>
+<div class="absolute inset-0 bg-cover bg-center rounded-3xl shadow-2xl border-4 border-white rotate-1 transform overflow-hidden" data-alt="A high-end, contemporary corporate reception area with a sleek marble desk and minimalist furniture. Large floor-to-ceiling windows allow natural sunlight to flood the space. A modern digital kiosk is visible in the foreground, reflecting a high-tech and welcoming atmosphere. The overall color palette consists of soft whites, light greens, and warm wood tones." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDMtGVQQwktxjjs7Gq91XNV5tawegTVjxd1QxoGzmqSEo32mo43hReCY43Hu86GeYbggQY4ZYBVwc7f_HkCzHjUlXZSFOryaHvnc8EpxiXN7WLRqCiWOX0E4cwqjJbmxXjCvrJabLuWZLcO6TtVGyi9ICJPC14QLS43-0lq6lU5Jq6MomwW_SjUuz3NXqilZx6EORCepDaP0h6mm9ZM09XLHFWEHhIaJHMrRC3s_q25zDWuezSA5mkI')">
+<div class="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent"></div>
+</div>
+<!-- Floating Status Card -->
+<div class="absolute -bottom-10 -left-10 glass-card p-md rounded-2xl shadow-xl max-w-[280px] animate-bounce-slow">
+<div class="flex items-center gap-sm">
+<div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container">person_check</span>
+</div>
+<div>
+<p class="text-label-md font-bold text-on-surface">Visita Registrada</p>
+<p class="text-xs text-on-surface-variant">Juan Pérez • Reunión ID: 245</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Section (Bento Grid) -->
+<section class="py-xl bg-surface-container-low">
+<div class="max-w-7xl mx-auto px-margin">
+<div class="text-center mb-xl">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-base">Potencia tu <span class="text-primary">recepción</span></h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">Tecnología diseñada para simplificar el flujo de personas en tu edificio mientras mantienes los más altos estándares de seguridad.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-gutter">
+<!-- Large Feature Card -->
+<div class="md:col-span-2 lg:col-span-2 bg-white p-md rounded-3xl shadow-sm border border-outline-variant hover:shadow-md transition-shadow group">
+<div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl">bolt</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-sm">Check-in Ultrarápido</h3>
+<p class="text-on-surface-variant mb-md">Reduce los tiempos de espera con registros mediante códigos QR, reconocimiento facial o pre-registro vía correo electrónico.</p>
+<div class="h-48 w-full bg-surface rounded-xl overflow-hidden" data-alt="A close-up of a sleek digital tablet at a modern reception desk showing a simplified check-in screen with a QR code scanner active. The interface is clean, professional, and follows a green and white color theme. The background is a soft-focus office environment." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBGcP519a5bkeEsbaHjO2dkxes04wtCgdi8959fJYP5aQOR-Ea_TLUWJZRQdz2-8M-4iT1OudpQD1pr-r9Tu2Wyk_rmtyInO9J6004JAPQCM9T3SqmobJayLlE4nyJu36VH0xDny2Tgmf9XtcGbMiHHPjR25pG9TBZ4qv-YC8HcCFVXp7-k5KW8v5R5ofJRLRpQPafy1HKiSUf7BxXiShLnQOv7QHuWgSt-TJvVm4lWSW97fnr7JPIC')"></div>
+</div>
+<!-- Vertical Feature Card -->
+<div class="md:col-span-1 lg:col-span-1 bg-white p-md rounded-3xl shadow-sm border border-outline-variant hover:shadow-md transition-shadow group flex flex-col justify-between">
+<div>
+<div class="w-14 h-14 rounded-2xl bg-secondary-container flex items-center justify-center mb-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-secondary text-3xl">notifications_active</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-sm">Notificaciones Real-time</h3>
+<p class="text-on-surface-variant">Informa automáticamente al anfitrión vía Slack, WhatsApp o correo electrónico en el momento que llega su visita.</p>
+</div>
+<div class="mt-md p-sm bg-surface-container rounded-xl flex items-center gap-sm">
+<div class="p-2 bg-white rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-primary">chat_bubble</span>
+</div>
+<span class="text-xs font-bold">"Tu visita ha llegado"</span>
+</div>
+</div>
+<!-- Compact Feature Card -->
+<div class="md:col-span-1 lg:col-span-1 bg-white p-md rounded-3xl shadow-sm border border-outline-variant hover:shadow-md transition-shadow group">
+<div class="w-14 h-14 rounded-2xl bg-tertiary-container flex items-center justify-center mb-md group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-tertiary text-3xl">shield_lock</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-sm">Seguridad y Compliance</h3>
+<p class="text-on-surface-variant">Cumple con normativas de protección de datos (GDPR) y protocolos de seguridad interna sin fricciones.</p>
+</div>
+<!-- Feature Card: Digital Logbook -->
+<div class="md:col-span-2 lg:col-span-1 bg-primary text-on-primary p-md rounded-3xl shadow-lg border border-primary-container group">
+<div class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center mb-md group-hover:rotate-12 transition-transform">
+<span class="material-symbols-outlined text-white text-3xl">menu_book</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-sm text-white">Libreta Digital</h3>
+<p class="text-primary-fixed">Historial completo y digitalizado de todos los ingresos. Olvida el papel y accede a reportes detallados en segundos.</p>
+</div>
+<!-- Data Analytics Card -->
+<div class="md:col-span-3 lg:col-span-3 bg-inverse-surface p-md rounded-3xl shadow-sm border border-outline-variant flex flex-col md:flex-row items-center gap-lg">
+<div class="flex-1">
+<h3 class="font-headline-md text-headline-md mb-sm text-white">Analíticas Inteligentes</h3>
+<p class="text-surface-variant mb-md">Visualiza picos de tráfico, tiempos de permanencia y frecuencia de visitas para optimizar tus recursos operativos.</p>
+<button class="text-primary-container font-bold flex items-center gap-2 hover:gap-4 transition-all">
+                Explorar reportes <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<div class="w-full md:w-1/2 h-40 bg-surface/5 rounded-2xl border border-white/10 p-md flex items-end gap-2 overflow-hidden">
+<!-- Simple CSS Bar Chart -->
+<div class="flex-1 bg-primary-container rounded-t-lg h-[60%] animate-pulse"></div>
+<div class="flex-1 bg-primary-container rounded-t-lg h-[90%]"></div>
+<div class="flex-1 bg-primary-container rounded-t-lg h-[40%]"></div>
+<div class="flex-1 bg-primary-container rounded-t-lg h-[75%]"></div>
+<div class="flex-1 bg-primary-container rounded-t-lg h-[55%]"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust Section (Asymmetric) -->
+<section class="py-xl overflow-hidden">
+<div class="max-w-7xl mx-auto px-margin">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-xl items-center">
+<div class="order-2 lg:order-1 relative">
+<div class="absolute -top-10 -left-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
+<img class="rounded-3xl shadow-2xl relative z-10 w-full object-cover aspect-video" data-alt="A professional office manager using a modern tablet interface to check in a visitor. The scene is bright and professional, showing a high-tech reception with glass partitions and soft environmental lighting. The image emphasizes efficiency and modern technology in a corporate setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0HDYDcNkpv1RdTiSiB5gi4HeWmOBCrJnkblirLoB34p75lhW5V3-SC5ReaitNmnEsoB1th2JFl0Nc0umH3Hx107iM_CQtKmdbj0u2XkXmOUQAXcfQ9CuyU8drGoUdVQ-T5nk2s8pUqYNFAqcXLVNprT3-E4rwgqelCntWikUvdGxMptHr912O1QunfhibwExRt2F_iuAURBTSf7SQ8X_mZy_WSJB4nuqgepUBVHpoaFwfAnIE1C4_"/>
+<div class="absolute -bottom-6 -right-6 p-md bg-white rounded-2xl shadow-xl z-20 flex flex-col items-center border border-outline-variant">
+<span class="text-headline-xl font-headline-xl text-primary">99.9%</span>
+<span class="text-label-md font-label-md text-on-surface-variant">Uptime Garantizado</span>
+</div>
+</div>
+<div class="order-1 lg:order-2 space-y-md">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Diseñado para la <span class="text-primary">Continuidad Operativa</span></h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Nuestra infraestructura cloud asegura que tu recepción nunca se detenga. Con FlowVisit, el registro de visitas es resiliente, seguro y siempre disponible.</p>
+<ul class="space-y-sm">
+<li class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">check_circle</span>
+<span class="font-bold">Infraestructura escalable en la nube</span>
+</li>
+<li class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">check_circle</span>
+<span class="font-bold">Backups automáticos en tiempo real</span>
+</li>
+<li class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">check_circle</span>
+<span class="font-bold">Soporte técnico 24/7 especializado</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="py-xl">
+<div class="max-w-7xl mx-auto px-margin">
+<div class="bg-inverse-surface rounded-[40px] p-xl text-center relative overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+<div class="absolute bottom-0 left-0 w-48 h-48 bg-secondary/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+<div class="relative z-10 max-w-2xl mx-auto space-y-md">
+<h2 class="font-headline-xl text-headline-xl text-white">¿Listo para transformar tu recepción?</h2>
+<p class="text-surface-variant font-body-lg">Únete a cientos de empresas que ya están modernizando sus espacios de trabajo con FlowVisit.</p>
+<div class="pt-sm">
+<button class="px-xl py-4 rounded-xl bg-primary-container text-on-primary-container font-bold text-body-md hover:scale-105 transition-transform active:scale-95 shadow-lg">
+                Agenda una demostración gratis
+              </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Shell (From JSON) -->
+<footer class="w-full py-xl bg-inverse-surface dark:bg-surface-container-lowest border-t border-outline-variant">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin max-w-7xl mx-auto">
+<div class="space-y-sm">
+<h3 class="font-headline-md text-headline-md text-on-secondary">FlowVisit</h3>
+<p class="text-on-secondary-fixed-variant text-body-md opacity-80">Reinventando el acceso corporativo con tecnología de vanguardia.</p>
+</div>
+<div>
+<h4 class="font-bold text-white mb-sm">Producto</h4>
+<ul class="space-y-xs">
+<li><a class="text-on-secondary-fixed-variant hover:text-primary-fixed transition-all hover:underline" href="#">Funcionalidades</a></li>
+<li><a class="text-on-secondary-fixed-variant hover:text-primary-fixed transition-all hover:underline" href="#">Integraciones</a></li>
+<li><a class="text-on-secondary-fixed-variant hover:text-primary-fixed transition-all hover:underline" href="#">Precios</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-white mb-sm">Compañía</h4>
+<ul class="space-y-xs">
+<li><a class="text-on-secondary-fixed-variant hover:text-primary-fixed transition-all hover:underline" href="#">About Us</a></li>
+<li><a class="text-on-secondary-fixed-variant hover:text-primary-fixed transition-all hover:underline" href="#">Contact Us</a></li>
+<li><a class="text-on-secondary-fixed-variant hover:text-primary-fixed transition-all hover:underline" href="#">Terms of Service</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-white mb-sm">Legal</h4>
+<ul class="space-y-xs">
+<li><a class="text-on-secondary-fixed-variant hover:text-primary-fixed transition-all hover:underline" href="#">Privacy Policy</a></li>
+<li><a class="text-on-secondary-fixed-variant hover:text-primary-fixed transition-all hover:underline" href="#">Cookies</a></li>
+</ul>
+</div>
+</div>
+<div class="mt-xl pt-md border-t border-white/10 max-w-7xl mx-auto px-margin flex flex-col md:flex-row justify-between items-center gap-sm">
+<p class="text-on-secondary-fixed-variant text-body-md opacity-70">© 2024 FlowVisit Inc. All rights reserved.</p>
+<div class="flex gap-md">
+<a class="text-on-secondary-fixed-variant hover:text-white transition-colors" href="#"><span class="material-symbols-outlined">language</span></a>
+<a class="text-on-secondary-fixed-variant hover:text-white transition-colors" href="#"><span class="material-symbols-outlined">public</span></a>
+</div>
+</div>
+</footer>
+<script>
+    // Micro-interaction for scroll effects
+    window.addEventListener('scroll', () => {
+      const nav = document.querySelector('nav');
+      if (window.scrollY > 20) {
+        nav.classList.add('bg-white/90', 'backdrop-blur-md', 'shadow-md');
+        nav.classList.remove('bg-surface');
+      } else {
+        nav.classList.remove('bg-white/90', 'backdrop-blur-md', 'shadow-md');
+        nav.classList.add('bg-surface');
+      }
+    });
+
+    // Subtle parallax or hover effects can be added here
+  </script>
+<style>
+    @keyframes bounce-slow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+    .animate-bounce-slow {
+      animation: bounce-slow 4s ease-in-out infinite;
+    }
+  </style>
+</body></html>

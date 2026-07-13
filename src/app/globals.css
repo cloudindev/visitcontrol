@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap");
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────────────────
@@ -227,3 +227,47 @@ canvas.signature-canvas {
   background: #c4c8d0;
   border-radius: 3px;
 }
+
+/* ─────────────────────────────────────────────────────────
+ * Landing Page Theme (.landing-theme)
+ * ─────────────────────────────────────────────────────── */
+.landing-theme {
+  --color-primary: #316b00;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #9de46c;
+  --color-on-primary-container: #2e6600;
+  --color-secondary: #5d6145;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #dfe3c0;
+  --color-on-secondary-container: #616549;
+  --color-background: #f9f9ff;
+  --color-on-background: #151c27;
+  --color-surface: #f9f9ff;
+  --color-on-surface: #151c27;
+  --color-surface-variant: #dce2f3;
+  --color-outline: #717a68;
+  --color-outline-variant: #c1c9b5;
+  --color-inverse-surface: #2a313d;
+  --color-inverse-on-surface: #ebf1ff;
+
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.landing-theme h1,
+.landing-theme h2,
+.landing-theme h3,
+.landing-theme h4 {
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+}
+
+.landing-theme .glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.landing-theme .hero-gradient {
+  background: radial-gradient(circle at top right, rgba(157, 228, 108, 0.15), transparent);
+}
+
