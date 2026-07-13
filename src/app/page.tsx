@@ -1,8 +1,18 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import LandscapeGuard from "@/components/LandscapeGuard";
+
+/** Las dos imágenes de fondo que se alternan cada 30 segundos */
+const BACKGROUND_IMAGES = [
+  "/images/header-residencial-sanesteban.jpg",
+  "/images/header-residencial-sanesteban-1.jpg",
+] as const;
+
+/** Intervalo de alternancia en milisegundos (30s) */
+const SWAP_INTERVAL_MS = 30_000;
 
 /**
  * Pantalla de Bienvenida (Home).
@@ -11,23 +21,40 @@ import LandscapeGuard from "@/components/LandscapeGuard";
  * 1. Primera visita → /registro
  * 2. Visitante recurrente → /consulta
  *
+ * Las imágenes de fondo se alternan cada 30 segundos con un fundido
+ * cruzado (crossfade) de 1.5s usando transición CSS de opacidad.
+ *
  * No se monta InactivityGuard aquí porque esta ES la pantalla destino
  * del timeout de inactividad.
  */
 export default function HomePage() {
   const router = useRouter();
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % BACKGROUND_IMAGES.length);
+    }, SWAP_INTERVAL_MS);
+
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <LandscapeGuard>
       <main className="relative min-h-screen">
-        {/* ── Imagen de fondo a pantalla completa ── */}
-        <Image
-          src="/images/header-residencial-sanesteban.jpg"
-          alt="Residencia de Mayores — Vista del jardín"
-          fill
-          className="object-cover"
-          priority
-        />
+        {/* ── Imágenes de fondo con crossfade ── */}
+        {BACKGROUND_IMAGES.map((src, index) => (
+          <Image
+            key={src}
+            src={src}
+            alt={`Residencia de Mayores — Vista ${index + 1}`}
+            fill
+            className={`object-cover transition-opacity duration-[1500ms] ease-in-out ${
+              index === activeIndex ? "opacity-100" : "opacity-0"
+            }`}
+            priority={index === 0}
+          />
+        ))}
         {/* Overlay oscuro suave para legibilidad */}
         <div className="absolute inset-0 bg-black/20" />
 
@@ -81,10 +108,11 @@ export default function HomePage() {
 
 /*
  * ─── Decisión técnica ───
- * La tarjeta se desplaza -mt-24 para solaparse con la imagen de cabecera,
- * creando el efecto de "tarjeta flotante" descrito en los requisitos.
+ * Crossfade implementado con dos <Image> superpuestos (position: absolute
+ * via fill) alternando opacity 0/1 con transition-opacity de 1.5s.
  *
- * Se usa next/image con priority para LCP optimization en la cabecera.
- * Los botones tienen min-height de 56px (via clase .btn) para
- * facilitar la interacción táctil a usuarios mayores.
+ * Se evita montar/desmontar imágenes para que ambas estén precargadas
+ * en memoria y la transición sea instantánea sin parpadeos.
+ *
+ * Solo la primera imagen tiene priority para optimizar LCP.
  */
