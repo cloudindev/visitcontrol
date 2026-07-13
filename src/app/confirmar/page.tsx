@@ -182,61 +182,40 @@ function ConfirmarContent() {
 
   /* ── Contenido principal: 2 columnas ── */
   return (
-    <main className="min-h-screen flex items-center justify-center px-6 py-8">
-      <div className="w-full max-w-5xl">
-        <BackButton href="/consulta" />
+    <main className="min-h-screen flex flex-col px-6 py-6">
+      <div className="w-full max-w-5xl mx-auto flex flex-col gap-4 flex-1">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
-          {/* ── Columna izquierda: datos del visitante ── */}
-          <div className="card p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <svg
-                  className="w-6 h-6 text-primary"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={1.5}
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-                  />
-                </svg>
-              </div>
-              <h2 className="text-3xl font-bold text-gray-800 font-serif">
+        {/* ── Fila superior: Volver + Datos del visitante ── */}
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+          <BackButton href="/consulta" />
+
+          <div className="card flex-1 w-full px-6 py-4">
+            <div className="flex flex-col md:flex-row md:items-center gap-4">
+              {/* Título */}
+              <h2 className="text-xl font-bold text-gray-800 font-serif whitespace-nowrap">
                 Datos del Visitante
               </h2>
-            </div>
 
-            <div className="space-y-5">
-              <div className="p-4 bg-surface rounded-xl">
-                <span className="field-label">Nombre</span>
-                <p className="text-xl text-gray-800 font-medium">
-                  {visitante.nombre}
-                </p>
+              {/* Datos en fila */}
+              <div className="flex flex-col md:flex-row flex-1 gap-3 md:gap-6">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-400 uppercase tracking-wide">Nombre</span>
+                  <span className="text-base font-medium text-gray-800">{visitante.nombre}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-400 uppercase tracking-wide">Apellidos</span>
+                  <span className="text-base font-medium text-gray-800">{visitante.apellidos}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-400 uppercase tracking-wide">DNI</span>
+                  <span className="text-base font-medium text-gray-800 font-mono tracking-wider">{visitante.dni}</span>
+                </div>
               </div>
 
-              <div className="p-4 bg-surface rounded-xl">
-                <span className="field-label">Apellidos</span>
-                <p className="text-xl text-gray-800 font-medium">
-                  {visitante.apellidos}
-                </p>
-              </div>
-
-              <div className="p-4 bg-surface rounded-xl">
-                <span className="field-label">DNI / Documento</span>
-                <p className="text-xl text-gray-800 font-medium font-mono tracking-wider">
-                  {visitante.dni}
-                </p>
-              </div>
-
-              {/* Checkbox veracidad */}
+              {/* Checkbox */}
               <label
                 htmlFor="acepta-datos"
-                className="flex items-start gap-3 cursor-pointer select-none pt-2"
+                className="flex items-center gap-2 cursor-pointer select-none whitespace-nowrap"
               >
                 <input
                   id="acepta-datos"
@@ -246,80 +225,77 @@ function ConfirmarContent() {
                     setAceptaDatos(e.target.checked);
                     if (e.target.checked) setFormError("");
                   }}
-                  className="mt-1 w-6 h-6 rounded border-2 border-gray-300 text-primary focus:ring-primary accent-primary flex-shrink-0"
+                  className="w-5 h-5 rounded border-2 border-gray-300 text-primary focus:ring-primary accent-primary flex-shrink-0"
                 />
-                <span className="text-gray-600 text-base leading-snug">
-                  Certifico que los datos arriba expuestos son veraces
+                <span className="text-gray-600 text-sm">
+                  Certifico que mis datos son veraces
                 </span>
               </label>
             </div>
           </div>
+        </div>
 
-          {/* ── Columna derecha: firma + confirmación ── */}
-          <div className="card p-8">
-            <h2 className="text-3xl font-bold text-gray-800 font-serif mb-6">
-              Firme aquí
-            </h2>
+        {/* ── Área de firma grande ── */}
+        <div className="card p-6 flex-1 flex flex-col">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 font-serif mb-4">
+            Firme aquí
+          </h2>
 
-            <form onSubmit={handleSubmit} noValidate>
-              {/* Firma */}
-              <div className="mb-6">
-                <SignaturePad
-                  ref={signatureRef}
-                  onSignatureChange={(isEmpty) => {
-                    setSignatureEmpty(isEmpty);
-                    if (!isEmpty) setFormError("");
-                  }}
-                />
+          <form onSubmit={handleSubmit} noValidate className="flex flex-col flex-1">
+            {/* Firma — ocupa todo el espacio disponible */}
+            <div className="flex-1 mb-4">
+              <SignaturePad
+                ref={signatureRef}
+                onSignatureChange={(isEmpty) => {
+                  setSignatureEmpty(isEmpty);
+                  if (!isEmpty) setFormError("");
+                }}
+              />
+            </div>
+
+            {/* Error */}
+            {formError && (
+              <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-danger text-center text-sm">
+                {formError}
               </div>
+            )}
 
-
-              {/* Error */}
-              {formError && (
-                <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-danger text-center text-sm">
-                  {formError}
-                </div>
+            {/* Botón confirmar — se activa solo con firma */}
+            <button
+              id="btn-confirmar-visita"
+              type="submit"
+              disabled={isSubmitting || signatureEmpty}
+              className="btn btn-primary w-full text-xl disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    />
+                  </svg>
+                  Procesando...
+                </>
+              ) : (
+                "Finalizar"
               )}
-
-              {/* Botón confirmar */}
-              <button
-                id="btn-confirmar-visita"
-                type="submit"
-                disabled={isSubmitting}
-                className="btn btn-primary w-full text-xl"
-              >
-                {isSubmitting ? (
-                  <>
-                    <svg
-                      className="animate-spin h-5 w-5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      aria-hidden="true"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                      />
-                    </svg>
-                    Procesando...
-                  </>
-                ) : (
-                  <>
-                    Finalizar
-                  </>
-                )}
-              </button>
-            </form>
-          </div>
+            </button>
+          </form>
         </div>
       </div>
     </main>
