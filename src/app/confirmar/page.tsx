@@ -40,7 +40,7 @@ function ConfirmarContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [signatureEmpty, setSignatureEmpty] = useState(true);
-  const [aceptaDatos, setAceptaDatos] = useState(false);
+  const [aceptaDatos, setAceptaDatos] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
 
@@ -232,31 +232,11 @@ function ConfirmarContent() {
                   {visitante.dni}
                 </p>
               </div>
-            </div>
-          </div>
-
-          {/* ── Columna derecha: firma + confirmación ── */}
-          <div className="card p-8">
-            <h2 className="text-3xl font-bold text-gray-800 font-serif mb-6">
-              Confirmar Visita
-            </h2>
-
-            <form onSubmit={handleSubmit} noValidate>
-              {/* Firma */}
-              <div className="mb-6">
-                <SignaturePad
-                  ref={signatureRef}
-                  onSignatureChange={(isEmpty) => {
-                    setSignatureEmpty(isEmpty);
-                    if (!isEmpty) setFormError("");
-                  }}
-                />
-              </div>
 
               {/* Checkbox veracidad */}
               <label
                 htmlFor="acepta-datos"
-                className="flex items-start gap-3 mb-6 cursor-pointer select-none"
+                className="flex items-start gap-3 cursor-pointer select-none pt-2"
               >
                 <input
                   id="acepta-datos"
@@ -272,6 +252,27 @@ function ConfirmarContent() {
                   Certifico que los datos arriba expuestos son veraces
                 </span>
               </label>
+            </div>
+          </div>
+
+          {/* ── Columna derecha: firma + confirmación ── */}
+          <div className="card p-8">
+            <h2 className="text-3xl font-bold text-gray-800 font-serif mb-6">
+              Firme aquí
+            </h2>
+
+            <form onSubmit={handleSubmit} noValidate>
+              {/* Firma */}
+              <div className="mb-6">
+                <SignaturePad
+                  ref={signatureRef}
+                  onSignatureChange={(isEmpty) => {
+                    setSignatureEmpty(isEmpty);
+                    if (!isEmpty) setFormError("");
+                  }}
+                />
+              </div>
+
 
               {/* Error */}
               {formError && (
@@ -313,8 +314,7 @@ function ConfirmarContent() {
                   </>
                 ) : (
                   <>
-                    Confirmar y Finalizar
-                    <span aria-hidden="true">✓</span>
+                    Finalizar
                   </>
                 )}
               </button>
