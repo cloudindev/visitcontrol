@@ -33,9 +33,9 @@ export default function HomePage() {
 
         {/* ── Tarjeta flotante centrada sobre la imagen ── */}
         <div className="relative z-10 flex items-center justify-center min-h-screen px-6 py-8">
-          <div className="card w-full max-w-xl p-12 flex flex-col items-center text-center shadow-2xl">
+          <div className="card w-full max-w-xl pt-8 pb-12 px-12 flex flex-col items-center text-center shadow-2xl">
             {/* Logo */}
-            <div className="w-28 h-28 relative mb-6 rounded-2xl overflow-hidden shadow-md">
+            <div className="w-28 h-28 relative mb-2 rounded-2xl overflow-hidden">
               <Image
                 src="/images/logo-residencial-sanesteban.png"
                 alt="Logo Residencia de Mayores"
@@ -46,10 +46,10 @@ export default function HomePage() {
             </div>
 
             {/* Título y subtítulo */}
-            <h1 className="text-4xl md:text-[65px] leading-tight font-bold text-primary font-serif mb-2">
+            <h1 className="text-4xl md:text-[65px] leading-tight font-bold text-primary font-serif mb-1">
               Bienvenido/a
             </h1>
-            <p className="text-lg text-gray-500 mb-10">
+            <p className="text-lg text-gray-500 mb-12">
               Por favor registra tu visita
             </p>
 
