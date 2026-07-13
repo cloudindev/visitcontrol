@@ -81,24 +81,8 @@ export default function ConsultaPage() {
             {/* Navegación */}
             <BackButton />
 
-            {/* Icono y cabecera */}
+            {/* Cabecera */}
             <div className="text-center mb-8">
-              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                <svg
-                  className="w-10 h-10 text-primary"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={1.5}
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-                  />
-                </svg>
-              </div>
 
               <h1 className="text-5xl font-bold text-primary font-serif mb-2">
                 Introduce tu DNI
@@ -166,8 +150,7 @@ export default function ConsultaPage() {
                   </>
                 ) : (
                   <>
-                    🔍
-                    <span>Consultar Datos</span>
+                    Continuar
                   </>
                 )}
               </button>
