@@ -7,6 +7,7 @@ import LandscapeGuard from "@/components/LandscapeGuard";
 import InactivityGuard from "@/components/InactivityGuard";
 import BackButton from "@/components/BackButton";
 import { validateDocumento } from "@/lib/validators";
+import { API_BASE } from "@/lib/api";
 
 /**
  * Página de Consulta — Visitante Recurrente.
@@ -43,7 +44,7 @@ export default function ConsultaPage() {
       setIsSearching(true);
 
       try {
-        const res = await fetch("/api/visitantes/consultar", {
+        const res = await fetch(`${API_BASE}/visitantes/consultar`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ dni: dni.trim() }),

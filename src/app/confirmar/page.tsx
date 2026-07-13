@@ -7,6 +7,7 @@ import LandscapeGuard from "@/components/LandscapeGuard";
 import InactivityGuard from "@/components/InactivityGuard";
 import SignaturePad from "@/components/SignaturePad";
 import BackButton from "@/components/BackButton";
+import { API_BASE } from "@/lib/api";
 
 /** Referencia expuesta por SignaturePad */
 interface SignaturePadRef {
@@ -54,7 +55,7 @@ function ConfirmarContent() {
     const fetchVisitante = async () => {
       try {
         // Usamos el endpoint de consulta con un param especial
-        const res = await fetch("/api/visitantes/consultar", {
+        const res = await fetch(`${API_BASE}/visitantes/consultar`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id: visitanteId }),
@@ -99,7 +100,7 @@ function ConfirmarContent() {
       try {
         const firma = signatureRef.current?.toDataURL() ?? "";
 
-        const res = await fetch("/api/visitas", {
+        const res = await fetch(`${API_BASE}/visitas`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

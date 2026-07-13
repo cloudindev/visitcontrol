@@ -8,6 +8,7 @@ import InactivityGuard from "@/components/InactivityGuard";
 import SignaturePad from "@/components/SignaturePad";
 import BackButton from "@/components/BackButton";
 import { validateDocumento } from "@/lib/validators";
+import { API_BASE } from "@/lib/api";
 
 /** Referencia expuesta por SignaturePad */
 interface SignaturePadRef {
@@ -99,7 +100,7 @@ export default function RegistroPage() {
       try {
         const firma = signatureRef.current?.toDataURL() ?? "";
 
-        const res = await fetch("/api/visitantes", {
+        const res = await fetch(`${API_BASE}/visitantes`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
