@@ -142,7 +142,7 @@ export default function RegistroPage() {
             <BackButton />
 
             {/* Cabecera */}
-            <div className="text-center mb-4">
+            <div className="text-center mb-8">
               <h1 className="text-3xl md:text-5xl font-bold text-primary font-serif mb-1">
                 Registro de visita
               </h1>
@@ -276,7 +276,7 @@ export default function RegistroPage() {
                     Enviando...
                   </>
                 ) : (
-                  "Confirmar mi visita"
+                  "Confirmar mis datos"
                 )}
               </button>
             </form>
