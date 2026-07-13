@@ -80,7 +80,7 @@ export default function HomePage() {
                 Bienvenido/a
               </h1>
               <p className="text-lg text-gray-500 mb-12">
-                Por favor registra tu visita
+                Por favor registre su visita
               </p>
 
               {/* Botones de acción */}
