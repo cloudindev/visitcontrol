@@ -3,9 +3,9 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import LandscapeGuard from "@/components/LandscapeGuard";
 import InactivityGuard from "@/components/InactivityGuard";
-import BackButton from "@/components/BackButton";
 import { validateDocumento } from "@/lib/validators";
 import { API_BASE } from "@/lib/api";
 
@@ -76,14 +76,21 @@ export default function ConsultaPage() {
   return (
     <LandscapeGuard>
       <InactivityGuard>
-        <main className="min-h-screen flex items-center justify-center px-6 py-8">
+        <main className="min-h-screen flex flex-col items-center justify-center px-6 py-8">
+          {/* Logo como enlace a Home */}
+          <Link href="/" className="mb-4">
+            <Image
+              src="/images/logo-residencial-sanesteban.png"
+              alt="Logo Residencia de Mayores"
+              width={100}
+              height={100}
+              className="rounded-2xl"
+            />
+          </Link>
+
           <div className="card w-full max-w-lg p-10">
-            {/* Navegación */}
-            <BackButton />
-
             {/* Cabecera */}
-            <div className="text-center mb-8">
-
+            <div className="text-center mb-10">
               <h1 className="text-3xl md:text-5xl font-bold text-primary font-serif mb-2">
                 Introduce tu DNI
               </h1>
