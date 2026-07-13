@@ -30,31 +30,37 @@ interface LandscapeGuardProps {
  */
 export default function LandscapeGuard({ children }: LandscapeGuardProps) {
   const [isPortrait, setIsPortrait] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
 
   useEffect(() => {
     if (typeof window === 'undefined' || !window.matchMedia) {
       return;
     }
 
-    const mediaQuery = window.matchMedia('(orientation: portrait)');
+    const orientationQuery = window.matchMedia('(orientation: portrait)');
+    /** Solo bloqueamos portrait en pantallas ≥768px (tablets). Móviles pasan. */
+    const tabletQuery = window.matchMedia('(min-width: 768px)');
 
-    /** Sincroniza el estado con la orientación actual del dispositivo. */
-    const handleOrientationChange = (event: MediaQueryListEvent | MediaQueryList) => {
-      setIsPortrait(event.matches);
+    /** Sincroniza el estado con la orientación y tamaño del dispositivo. */
+    const update = () => {
+      setIsPortrait(orientationQuery.matches);
+      setIsTablet(tabletQuery.matches);
     };
 
     // Lectura inicial
-    handleOrientationChange(mediaQuery);
+    update();
 
-    // Escuchar cambios de orientación
-    mediaQuery.addEventListener('change', handleOrientationChange);
+    // Escuchar cambios
+    orientationQuery.addEventListener('change', update);
+    tabletQuery.addEventListener('change', update);
 
     return () => {
-      mediaQuery.removeEventListener('change', handleOrientationChange);
+      orientationQuery.removeEventListener('change', update);
+      tabletQuery.removeEventListener('change', update);
     };
   }, []);
 
-  if (isPortrait) {
+  if (isPortrait && isTablet) {
     return (
       <div
         className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#1E40AF] text-white px-8"

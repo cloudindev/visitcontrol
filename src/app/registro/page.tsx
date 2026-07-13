@@ -143,7 +143,7 @@ export default function RegistroPage() {
 
             {/* Cabecera */}
             <div className="text-center mb-4">
-              <h1 className="text-5xl font-bold text-primary font-serif mb-1">
+              <h1 className="text-3xl md:text-5xl font-bold text-primary font-serif mb-1">
                 Registro de visita
               </h1>
               <p className="text-gray-500">
@@ -153,7 +153,7 @@ export default function RegistroPage() {
 
             <form onSubmit={handleSubmit} noValidate>
               {/* Nombre + Apellidos + DNI en una fila */}
-              <div className="grid grid-cols-3 gap-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div>
                   <label htmlFor="nombre" className="field-label">
                     Nombre

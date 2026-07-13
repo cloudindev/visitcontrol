@@ -186,7 +186,7 @@ function ConfirmarContent() {
       <div className="w-full max-w-5xl">
         <BackButton href="/consulta" />
 
-        <div className="grid grid-cols-2 gap-8 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
           {/* ── Columna izquierda: datos del visitante ── */}
           <div className="card p-8">
             <div className="flex items-center gap-3 mb-6">
