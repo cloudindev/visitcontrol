@@ -9,6 +9,7 @@ import LandscapeGuard from "@/components/LandscapeGuard";
 const BACKGROUND_IMAGES = [
   "/images/header-residencial-sanesteban.jpg",
   "/images/header-residencial-sanesteban-1.jpg",
+  "/images/header-residencial-sanesteban-2.jpg",
 ] as const;
 
 /** Intervalo de alternancia en milisegundos (30s) */
