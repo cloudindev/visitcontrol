@@ -105,12 +105,12 @@ export default function HomePage() {
             </div>
 
             {/* QR montado sobre el borde inferior del card */}
-            <div className="-mt-8 w-28 h-28 rounded-xl overflow-hidden shadow-lg border-4 border-white bg-white">
+            <div className="-mt-5 w-36 h-40 rounded-xl overflow-hidden shadow-lg border-4 border-white bg-white flex items-center justify-center">
               <Image
                 src="/images/qr.png"
                 alt="Código QR — Escanéame"
-                width={112}
-                height={112}
+                width={136}
+                height={152}
                 className="object-contain"
               />
             </div>
