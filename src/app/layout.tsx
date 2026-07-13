@@ -9,6 +9,10 @@ export const metadata: Metadata = {
   title: "Registro de Visitas — Residencia de Mayores",
   description:
     "Sistema de registro de visitas para la Residencia de Mayores. Registre su visita de forma rápida y sencilla.",
+  icons: {
+    icon: "/images/favicon-residencial-sanesteban.png",
+    apple: "/images/favicon-residencial-sanesteban.png",
+  },
 };
 
 /**
