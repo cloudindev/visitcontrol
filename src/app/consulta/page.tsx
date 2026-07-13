@@ -78,7 +78,7 @@ export default function ConsultaPage() {
       <InactivityGuard>
         <main className="min-h-screen flex flex-col items-center justify-center px-6 py-8">
           {/* Logo como enlace a Home */}
-          <Link href="/" className="mb-4">
+          <Link href="/" className="mb-6">
             <Image
               src="/images/logo-residencial-sanesteban.png"
               alt="Logo Residencia de Mayores"
@@ -92,11 +92,10 @@ export default function ConsultaPage() {
             {/* Cabecera */}
             <div className="text-center mb-10">
               <h1 className="text-3xl md:text-5xl font-bold text-primary font-serif mb-2">
-                Introduce tu DNI
+                Introduzca su DNI
               </h1>
               <p className="text-gray-500 text-lg">
-                Ingrese el número de documento para acceder a la información
-                centralizada del sistema
+                Ingrese su número de documento de identidad para poder confirmar sus datos
               </p>
             </div>
 
