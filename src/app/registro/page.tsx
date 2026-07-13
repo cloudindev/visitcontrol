@@ -248,8 +248,8 @@ export default function RegistroPage() {
               <button
                 id="btn-enviar-registro"
                 type="submit"
-                disabled={isSubmitting}
-                className="btn btn-primary w-full text-xl"
+                disabled={isSubmitting || !form.nombre.trim() || !form.apellidos.trim() || !form.dni.trim() || signatureEmpty}
+                className="btn btn-primary w-full text-xl disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (
                   <>
@@ -276,7 +276,7 @@ export default function RegistroPage() {
                     Enviando...
                   </>
                 ) : (
-                  "Enviar Registro"
+                  "Confirmar mi visita"
                 )}
               </button>
             </form>
