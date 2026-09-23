@@ -126,7 +126,7 @@ export default function SalidaPage() {
                     Registro de Salida
                   </h1>
                   <p className="text-gray-500 text-base md:text-lg">
-                    Ingrese su número de documento de identidad para registrar su salida
+                    Ingrese su NIF para registrar su salida.
                   </p>
                 </div>
 
