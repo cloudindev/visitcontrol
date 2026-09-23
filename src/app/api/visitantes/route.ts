@@ -1,46 +1,41 @@
 /**
  * POST /api/visitantes
  *
- * Crea un nuevo visitante y registra su primera visita.
+ * Registra una visita tanto para nuevos visitantes como para visitantes recurrentes,
+ * incluyendo soporte para acompañantes y almacenamiento de firma digital.
  *
- * Body: { nombre: string, apellidos: string, dni: string, firma: string }
- * - firma: data URL en base64 (data:image/png;base64,...)
- *
- * Flujo:
- * 1. Valida campos requeridos y formato de DNI.
- * 2. Comprueba que el DNI no exista ya en la base de datos.
- * 3. Sube la firma al bucket privado 'firmas' de Supabase Storage.
- * 4. Inserta el visitante en la tabla `visitantes`.
- * 5. Inserta la visita en la tabla `visitas` con referencia al visitante.
- *
- * Decisión técnica: se almacena solo el path del storage (no URL pública)
- * porque el bucket 'firmas' es privado. El acceso se gestionará mediante
- * signed URLs cuando sea necesario visualizar la firma.
- *
- * Edge cases cubiertos:
- * - DNI duplicado → 409 con código 'DNI_EXISTS'
- * - Firma sin prefijo base64 válido → se maneja con split genérico
- * - Fallo en upload de storage → se propaga como 500
- * - Fallo en insert de visitante/visita → se propaga como 500
+ * Body: {
+ *   nombre: string,
+ *   apellidos: string,
+ *   dni: string,
+ *   firma: string,
+ *   acompanantes?: Array<{ dni?: string, nombre: string, apellidos: string }>
+ * }
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
 import { validateDocumento, formatDocumento } from '@/lib/validators';
 
-/** Interfaz del body esperado en la petición */
+interface Acompanante {
+  dni?: string;
+  nombre: string;
+  apellidos: string;
+}
+
 interface RegistroVisitanteBody {
   nombre: string;
   apellidos: string;
   dni: string;
   firma: string;
+  acompanantes?: Acompanante[];
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     // ── 1. Parsear y validar campos requeridos ──────────────────────────
     const body = (await request.json()) as Partial<RegistroVisitanteBody>;
-    const { nombre, apellidos, dni, firma } = body;
+    const { nombre, apellidos, dni, firma, acompanantes } = body;
 
     if (!nombre || !apellidos || !dni || !firma) {
       return NextResponse.json(
@@ -75,19 +70,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    if (existente) {
-      return NextResponse.json(
-        { error: 'Este documento ya está registrado', code: 'DNI_EXISTS' },
-        { status: 409 }
-      );
-    }
-
-    // ── 5. Convertir firma base64 a Buffer ──────────────────────────────
-    // El data URL tiene formato: data:image/png;base64,<datos>
+    // ── 5. Convertir firma base64 a Buffer y subir a storage ────────────
     const base64Data = firma.split(',')[1] ?? firma;
     const firmaBuffer = Buffer.from(base64Data, 'base64');
-
-    // ── 6. Subir firma al bucket privado 'firmas' ───────────────────────
     const sanitizedDni = dniFormateado.replace(/[^a-zA-Z0-9]/g, '_');
     const storagePath = `${Date.now()}-${sanitizedDni}.png`;
 
@@ -101,36 +86,78 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (errorUpload) {
       console.error('[POST /api/visitantes] Error subiendo firma:', errorUpload);
       return NextResponse.json(
-        { error: 'Error interno del servidor' },
+        { error: 'Error interno del servidor al procesar la firma' },
         { status: 500 }
       );
     }
 
-    // ── 7. El storagePath es la referencia al archivo (bucket privado) ──
+    // ── 6. Obtener o crear visitante ────────────────────────────────────
+    let visitanteId: string;
 
-    // ── 8. Insertar visitante ───────────────────────────────────────────
-    const { data: insertedVisitante, error: errorInsertVisitante } = await supabaseAdmin
-      .from('visitantes')
-      .insert({ nombre, apellidos, dni: dniFormateado })
-      .select('id')
-      .single();
+    if (existente) {
+      // Visitante recurrente: reutilizar ID y actualizar nombre/apellidos si han variado
+      visitanteId = existente.id;
+      await supabaseAdmin
+        .from('visitantes')
+        .update({ nombre: nombre.trim(), apellidos: apellidos.trim() })
+        .eq('id', existente.id);
+    } else {
+      // Nuevo visitante: insertar en la tabla
+      const { data: insertedVisitante, error: errorInsertVisitante } = await supabaseAdmin
+        .from('visitantes')
+        .insert({
+          nombre: nombre.trim(),
+          apellidos: apellidos.trim(),
+          dni: dniFormateado,
+        })
+        .select('id')
+        .single();
 
-    if (errorInsertVisitante || !insertedVisitante) {
-      console.error('[POST /api/visitantes] Error insertando visitante:', errorInsertVisitante);
-      return NextResponse.json(
-        { error: 'Error interno del servidor' },
-        { status: 500 }
-      );
+      if (errorInsertVisitante || !insertedVisitante) {
+        console.error('[POST /api/visitantes] Error insertando visitante:', errorInsertVisitante);
+        return NextResponse.json(
+          { error: 'Error interno del servidor' },
+          { status: 500 }
+        );
+      }
+      visitanteId = insertedVisitante.id;
     }
 
-    // ── 9. Insertar primera visita ──────────────────────────────────────
-    const { error: errorInsertVisita } = await supabaseAdmin
+    // ── 7. Insertar visita con acompañantes (fallback defensivo) ────────
+    const filteredAcompanantes = Array.isArray(acompanantes)
+      ? acompanantes
+          .filter((ac) => ac.nombre?.trim() || ac.apellidos?.trim())
+          .map((ac) => ({
+            dni: ac.dni?.trim() ? formatDocumento(ac.dni) : '',
+            nombre: ac.nombre?.trim() || '',
+            apellidos: ac.apellidos?.trim() || '',
+          }))
+      : [];
+
+    const visitaPayload: Record<string, unknown> = {
+      visitante_id: visitanteId,
+      firma_url: storagePath,
+      acepta_terminos: true,
+    };
+
+    if (filteredAcompanantes.length > 0) {
+      visitaPayload.acompanantes = filteredAcompanantes;
+    }
+
+    let { error: errorInsertVisita } = await supabaseAdmin
       .from('visitas')
-      .insert({
-        visitante_id: insertedVisitante.id,
-        firma_url: storagePath,
-        acepta_terminos: true,
-      });
+      .insert(visitaPayload);
+
+    // Fallback defensivo: si la columna `acompanantes` no existe aún en Supabase
+    if (errorInsertVisita && visitaPayload.acompanantes) {
+      console.warn(
+        '[POST /api/visitantes] Reintentando inserción sin columna acompanantes:',
+        errorInsertVisita
+      );
+      delete visitaPayload.acompanantes;
+      const retry = await supabaseAdmin.from('visitas').insert(visitaPayload);
+      errorInsertVisita = retry.error;
+    }
 
     if (errorInsertVisita) {
       console.error('[POST /api/visitantes] Error insertando visita:', errorInsertVisita);
@@ -140,9 +167,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // ── 10. Respuesta exitosa ───────────────────────────────────────────
+    // ── 8. Respuesta exitosa ────────────────────────────────────────────
     return NextResponse.json(
-      { success: true, visitante_id: insertedVisitante.id },
+      { success: true, visitante_id: visitanteId },
       { status: 201 }
     );
   } catch (error: unknown) {
@@ -153,33 +180,3 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 }
-
-/**
- * ══════════════════════════════════════════════════════════════════════════════
- * DOCUMENTACIÓN DE MEMORIA
- * ══════════════════════════════════════════════════════════════════════════════
- *
- * Decisiones técnicas:
- * - Se usa `maybeSingle()` en vez de `single()` para la consulta de DNI
- *   existente, porque `single()` lanza error si no encuentra resultados,
- *   mientras que `maybeSingle()` retorna `null` — que es lo esperado.
- *
- * - Se almacena solo el `storagePath` (ej: "1720828160000-12345678Z.png")
- *   en la columna `firma_url` en vez de una URL pública, porque el bucket
- *   'firmas' es privado. El frontend deberá solicitar un signed URL al
- *   servidor cuando necesite visualizar la firma.
- *
- * - El DNI se sanitiza para el nombre del archivo reemplazando caracteres
- *   especiales por guiones bajos, evitando problemas con rutas de storage.
- *
- * - Se usa `Buffer.from(base64Data, 'base64')` que es compatible con el
- *   runtime de Node.js de Next.js (no Edge).
- *
- * Edge cases cubiertos:
- * - Firma sin prefijo "data:image/png;base64," → el split(',')[1] maneja
- *   ambos casos (con o sin prefijo) gracias al fallback `?? firma`.
- * - DNI duplicado → respuesta 409 específica con código para que el
- *   frontend pueda ofrecer flujo de "visita recurrente".
- * - Errores de Supabase en cualquier paso → se logean y se devuelve 500
- *   genérico sin filtrar detalles internos al cliente.
- */

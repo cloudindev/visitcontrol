@@ -24,6 +24,12 @@ export interface VisitanteInfo {
   dni: string;
 }
 
+export interface AcompananteInfo {
+  dni?: string;
+  nombre: string;
+  apellidos: string;
+}
+
 export interface VisitaData {
   id: string;
   visitante_id: string;
@@ -31,17 +37,21 @@ export interface VisitaData {
   signatureUrl: string | null;
   acepta_terminos: boolean;
   created_at: string;
+  fecha_salida?: string | null;
+  acompanantes?: AcompananteInfo[] | null;
   visitante: VisitanteInfo | null;
 }
 
-// Interfaz para la respuesta cruda de Supabase
+// Interfaz para la respuesta de Supabase
 interface RawDBVisita {
   id: string;
   visitante_id: string;
   firma_url: string;
   acepta_terminos: boolean;
   created_at: string;
-  visitantes: unknown; // Puede venir como objeto o array dependiendo de Supabase
+  fecha_salida?: string | null;
+  acompanantes?: unknown;
+  visitantes: unknown;
 }
 
 export default async function AdminPage() {
@@ -53,15 +63,11 @@ export default async function AdminPage() {
     redirect("/admin/login");
   }
 
-  // ── 2. Recuperar visitas de Supabase ──────────────────────────────────────
+  // ── 2. Recuperar visitas de Supabase con comodín para evitar errores si no hay columnas nuevas ──
   const { data: rawVisitas, error } = await supabaseAdmin
     .from("visitas")
     .select(`
-      id,
-      visitante_id,
-      firma_url,
-      acepta_terminos,
-      created_at,
+      *,
       visitantes (
         id,
         nombre,
@@ -73,7 +79,6 @@ export default async function AdminPage() {
 
   if (error) {
     console.error("[AdminPage] Error recuperando visitas:", error);
-    // Renderizamos una vista de error simple si falla la base de datos
     return (
       <main className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-6">
         <div className="card max-w-md p-8 text-center bg-white shadow-md rounded-2xl">
@@ -107,7 +112,7 @@ export default async function AdminPage() {
         }
       }
 
-      // Normalizar datos del visitante (Supabase puede devolverlo como objeto o array)
+      // Normalizar datos del visitante
       let visitante: VisitanteInfo | null = null;
       if (visit.visitantes) {
         if (Array.isArray(visit.visitantes)) {
@@ -117,6 +122,12 @@ export default async function AdminPage() {
         }
       }
 
+      // Normalizar acompañantes
+      let acompanantes: AcompananteInfo[] | null = null;
+      if (Array.isArray(visit.acompanantes)) {
+        acompanantes = visit.acompanantes as AcompananteInfo[];
+      }
+
       return {
         id: visit.id,
         visitante_id: visit.visitante_id,
@@ -124,6 +135,8 @@ export default async function AdminPage() {
         signatureUrl,
         acepta_terminos: visit.acepta_terminos,
         created_at: visit.created_at,
+        fecha_salida: visit.fecha_salida || null,
+        acompanantes,
         visitante,
       };
     })

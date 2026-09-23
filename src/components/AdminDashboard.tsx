@@ -4,8 +4,8 @@
  * @file AdminDashboard.tsx
  * @description Componente cliente interactivo del Panel de Administración de visitas.
  *
- * Proporciona búsquedas, filtros por fecha, paginación, visualización de firmas
- * en ventana emergente (modal) y cierre de sesión.
+ * Proporciona búsquedas, filtros por fecha, visualización de firmas
+ * en ventana emergente (modal), acompañantes, horas de entrada/salida y cierre de sesión.
  */
 
 import React, { useState, useMemo, useCallback } from "react";
@@ -71,19 +71,29 @@ export default function AdminDashboard({ initialVisits }: AdminDashboardProps) {
   // Lógica de filtrado en memoria
   const filteredVisits = useMemo(() => {
     return initialVisits.filter((visit) => {
-      // 1. Filtrar por término de búsqueda (nombre, apellidos, DNI)
+      // 1. Filtrar por término de búsqueda (nombre, apellidos, DNI o acompañantes)
       const query = searchTerm.toLowerCase().trim();
-      const matchSearch = !query || (
+      const matchMain = !query || (
         (visit.visitante?.nombre || "").toLowerCase().includes(query) ||
         (visit.visitante?.apellidos || "").toLowerCase().includes(query) ||
         (visit.visitante?.dni || "").toLowerCase().includes(query)
       );
 
+      // Comprobar también si algún acompañante coincide con la búsqueda
+      const matchAcompanante = !query || (
+        (visit.acompanantes || []).some(
+          (ac) =>
+            ac.nombre.toLowerCase().includes(query) ||
+            ac.apellidos.toLowerCase().includes(query) ||
+            (ac.dni || "").toLowerCase().includes(query)
+        )
+      );
+
+      const matchSearch = matchMain || matchAcompanante;
+
       // 2. Filtrar por fecha
       let matchDate = true;
       if (filterDate) {
-        // La fecha de Supabase es ISO String (ej: "2026-07-27T10:30:00Z").
-        // Comparamos los componentes de año, mes y día.
         const visitDateObj = new Date(visit.created_at);
         const yyyy = visitDateObj.getFullYear();
         const mm = String(visitDateObj.getMonth() + 1).padStart(2, "0");
@@ -97,15 +107,28 @@ export default function AdminDashboard({ initialVisits }: AdminDashboardProps) {
     });
   }, [initialVisits, searchTerm, filterDate]);
 
-  // Formateador de fecha local
+  // Formateador de fecha y hora local
   const formatDateTime = useCallback((isoString: string) => {
     try {
       const date = new Date(isoString);
       return date.toLocaleString("es-ES", {
-        dateStyle: "medium",
+        dateStyle: "short",
         timeStyle: "short",
       });
-    } catch (e) {
+    } catch {
+      return isoString;
+    }
+  }, []);
+
+  // Formateador de hora solamente
+  const formatTimeOnly = useCallback((isoString: string) => {
+    try {
+      const date = new Date(isoString);
+      return date.toLocaleTimeString("es-ES", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch {
       return isoString;
     }
   }, []);
@@ -151,7 +174,7 @@ export default function AdminDashboard({ initialVisits }: AdminDashboardProps) {
             {/* Buscador de texto */}
             <div>
               <label htmlFor="search-input" className="field-label mb-1.5 block">
-                Buscar visitante
+                Buscar visitante o acompañante
               </label>
               <input
                 id="search-input"
@@ -217,38 +240,86 @@ export default function AdminDashboard({ initialVisits }: AdminDashboardProps) {
               <table className="w-full text-left border-collapse" role="table">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200 text-gray-500 font-semibold text-sm">
-                    <th className="px-6 py-4">Fecha y Hora</th>
+                    <th className="px-6 py-4">Entrada</th>
+                    <th className="px-6 py-4">Salida</th>
                     <th className="px-6 py-4">Visitante</th>
-                    <th className="px-6 py-4">DNI / Documento</th>
+                    <th className="px-6 py-4">DNI</th>
+                    <th className="px-6 py-4">Acompañantes</th>
                     <th className="px-6 py-4">Firma Digital</th>
-                    <th className="px-6 py-4 text-center">Términos</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 text-gray-700 text-sm">
                   {filteredVisits.map((visit) => (
                     <tr key={visit.id} className="hover:bg-gray-50/50 transition-colors">
-                      {/* Fecha y Hora */}
-                      <td className="px-6 py-5 font-medium text-gray-900">
+                      {/* Hora de Entrada */}
+                      <td className="px-6 py-5 font-medium text-gray-900 whitespace-nowrap">
                         {formatDateTime(visit.created_at)}
                       </td>
 
-                      {/* Datos Visitante */}
+                      {/* Hora de Salida o Estado */}
+                      <td className="px-6 py-5 whitespace-nowrap">
+                        {visit.fecha_salida ? (
+                          <div className="flex flex-col">
+                            <span className="font-semibold text-gray-800">
+                              {formatTimeOnly(visit.fecha_salida)}
+                            </span>
+                            <span className="text-xs text-gray-400">
+                              {new Date(visit.fecha_salida).toLocaleDateString("es-ES", {
+                                dateStyle: "short",
+                              })}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            En el centro
+                          </span>
+                        )}
+                      </td>
+
+                      {/* Datos Visitante Principal */}
                       <td className="px-6 py-5">
                         {visit.visitante ? (
                           <div>
                             <p className="font-bold text-gray-800">
                               {visit.visitante.nombre} {visit.visitante.apellidos}
                             </p>
-                            <p className="text-xs text-gray-400">ID: {visit.visitante.id.slice(0, 8)}...</p>
                           </div>
                         ) : (
                           <span className="text-gray-400 italic">Desconocido</span>
                         )}
                       </td>
 
-                      {/* DNI */}
-                      <td className="px-6 py-5 font-mono tracking-wider text-gray-800">
+                      {/* DNI Principal */}
+                      <td className="px-6 py-5 font-mono tracking-wider text-gray-800 whitespace-nowrap">
                         {visit.visitante?.dni || "—"}
+                      </td>
+
+                      {/* Acompañantes */}
+                      <td className="px-6 py-5">
+                        {visit.acompanantes && visit.acompanantes.length > 0 ? (
+                          <div className="space-y-1">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200 mb-1">
+                              👥 {visit.acompanantes.length} acompañante{visit.acompanantes.length > 1 ? "s" : ""}
+                            </span>
+                            <div className="text-xs space-y-0.5">
+                              {visit.acompanantes.map((ac, idx) => (
+                                <div key={idx} className="text-gray-600">
+                                  <span className="font-medium text-gray-800">
+                                    {ac.nombre} {ac.apellidos}
+                                  </span>
+                                  {ac.dni ? (
+                                    <span className="font-mono text-gray-400 ml-1">
+                                      ({ac.dni})
+                                    </span>
+                                  ) : null}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <span className="text-gray-400 text-xs italic">Ninguno</span>
+                        )}
                       </td>
 
                       {/* Firma */}
@@ -256,7 +327,7 @@ export default function AdminDashboard({ initialVisits }: AdminDashboardProps) {
                         {visit.signatureUrl ? (
                           <button
                             onClick={() => setSelectedSignature(visit.signatureUrl)}
-                            className="relative w-36 h-12 bg-gray-100 rounded-lg border border-gray-200 overflow-hidden cursor-zoom-in hover:border-primary transition-all flex items-center justify-center p-1"
+                            className="relative w-32 h-12 bg-gray-100 rounded-lg border border-gray-200 overflow-hidden cursor-zoom-in hover:border-primary transition-all flex items-center justify-center p-1"
                             title="Ampliar firma"
                           >
                             <img
@@ -270,19 +341,6 @@ export default function AdminDashboard({ initialVisits }: AdminDashboardProps) {
                           <span className="text-gray-400 italic text-xs">Sin firma</span>
                         )}
                       </td>
-
-                      {/* Aceptación de términos */}
-                      <td className="px-6 py-5 text-center">
-                        {visit.acepta_terminos ? (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            Aceptado ✅
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200">
-                            Rechazado ❌
-                          </span>
-                        )}
-                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -292,7 +350,7 @@ export default function AdminDashboard({ initialVisits }: AdminDashboardProps) {
         </div>
       </main>
 
-      {/* modal de Firma Ampliada */}
+      {/* Modal de Firma Ampliada */}
       {selectedSignature && (
         <div
           className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in-up"
@@ -300,7 +358,6 @@ export default function AdminDashboard({ initialVisits }: AdminDashboardProps) {
           aria-modal="true"
         >
           <div className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl relative">
-            {/* Cabecera del modal */}
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-bold text-gray-800 font-serif">
                 Visualización de Firma
@@ -314,7 +371,6 @@ export default function AdminDashboard({ initialVisits }: AdminDashboardProps) {
               </button>
             </div>
 
-            {/* Imagen de la firma */}
             <div className="w-full h-64 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl flex items-center justify-center p-4">
               <img
                 src={selectedSignature}
@@ -323,7 +379,6 @@ export default function AdminDashboard({ initialVisits }: AdminDashboardProps) {
               />
             </div>
 
-            {/* Pie del modal */}
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setSelectedSignature(null)}
@@ -345,19 +400,16 @@ export default function AdminDashboard({ initialVisits }: AdminDashboardProps) {
  * ══════════════════════════════════════════════════════════════════════════════
  *
  * Decisiones técnicas:
- * - Se separa la lógica de búsqueda y filtros en un componente cliente para
- *   evitar recargas completas de la página e interrupciones del estado.
- * - `useMemo` se encarga de realizar la búsqueda y filtrado de visitas de forma
- *   eficiente en el cliente para mantener un rendimiento óptimo sin llamadas
- *   adicionales a la base de datos.
- * - Visualización interactiva de firmas: en vez de mostrar imágenes enormes
- *   directamente en la tabla, se muestran thumbnails responsivos clicables que
- *   abren un modal accesible para ver detalles finos.
+ * - Se añade la visualización de acompañantes y la hora de salida en la tabla
+ *   sin sobrecargar la interfaz, usando badges compactos y texto secundario.
+ * - Los acompañantes también se incluyen en la búsqueda de texto libre para que
+ *   el recepcionista pueda encontrar una visita buscando el nombre o DNI de
+ *   cualquiera de los acompañantes.
+ * - Estado "En el centro" con indicador visual en tiempo real cuando la visita
+ *   aún no ha registrado su salida.
  *
  * Edge cases cubiertos:
- * - Filtrado de fecha con husos horarios: se compara transformando la fecha
- *   ISO de la visita a string de fecha local YYYY-MM-DD para evitar el desajuste
- *   de zona horaria habitual del método `toISOString()`.
- * - Errores de análisis de fecha: controlado con try-catch en `formatDateTime`.
- * - Cierre de sesión múltiple: estado `loggingOut` bloquea re-clicks al botón.
+ * - Acompañantes vacíos o sin DNI: renderizado limpio sin paréntesis rotos.
+ * - Formato de fecha de salida independiente de la entrada por si la visita
+ *   se prolonga entre distintos días.
  */
