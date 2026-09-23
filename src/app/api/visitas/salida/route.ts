@@ -60,7 +60,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // ── 2. Buscar la visita más reciente de este visitante ───────────────
     const { data: latestVisit, error: errorVisita } = await supabaseAdmin
       .from('visitas')
-      .select('id, created_at, fecha_salida')
+      .select('*')
       .eq('visitante_id', visitante.id)
       .order('created_at', { ascending: false })
       .limit(1)
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (errorVisita) {
       console.error('[POST /api/visitas/salida] Error consultando última visita:', errorVisita);
       return NextResponse.json(
-        { error: 'Error interno del servidor' },
+        { error: errorVisita.message || 'Error al consultar la visita' },
         { status: 500 }
       );
     }
@@ -124,7 +124,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   } catch (error: unknown) {
     console.error('[POST /api/visitas/salida] Error inesperado:', error);
     return NextResponse.json(
-      { error: 'Error interno del servidor' },
+      { error: error instanceof Error ? error.message : 'Error interno del servidor' },
       { status: 500 }
     );
   }
