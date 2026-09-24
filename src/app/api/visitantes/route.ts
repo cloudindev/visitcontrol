@@ -2,12 +2,14 @@
  * POST /api/visitantes
  *
  * Registra una visita tanto para nuevos visitantes como para visitantes recurrentes,
- * incluyendo soporte para acompañantes y almacenamiento de firma digital.
+ * incluyendo persona visitada, parentesco, acompañantes y almacenamiento de firma digital.
  *
  * Body: {
  *   nombre: string,
  *   apellidos: string,
  *   dni: string,
+ *   persona_visitada: string,
+ *   parentesco: string,
  *   firma: string,
  *   acompanantes?: Array<{ dni?: string, nombre: string, apellidos: string }>
  * }
@@ -27,6 +29,8 @@ interface RegistroVisitanteBody {
   nombre: string;
   apellidos: string;
   dni: string;
+  persona_visitada: string;
+  parentesco: string;
   firma: string;
   acompanantes?: Acompanante[];
 }
@@ -35,11 +39,21 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     // ── 1. Parsear y validar campos requeridos ──────────────────────────
     const body = (await request.json()) as Partial<RegistroVisitanteBody>;
-    const { nombre, apellidos, dni, firma, acompanantes } = body;
+    const { nombre, apellidos, dni, persona_visitada, parentesco, firma, acompanantes } = body;
 
-    if (!nombre || !apellidos || !dni || !firma) {
+    if (
+      !nombre?.trim() ||
+      !apellidos?.trim() ||
+      !dni?.trim() ||
+      !persona_visitada?.trim() ||
+      !parentesco?.trim() ||
+      !firma
+    ) {
       return NextResponse.json(
-        { error: 'Todos los campos son obligatorios (nombre, apellidos, dni, firma)' },
+        {
+          error:
+            'Todos los campos principales son obligatorios (DNI, nombre, apellidos, persona que visita, parentesco y firma)',
+        },
         { status: 400 }
       );
     }
@@ -123,7 +137,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       visitanteId = insertedVisitante.id;
     }
 
-    // ── 7. Insertar visita con acompañantes (fallback defensivo) ────────
+    // ── 7. Insertar visita con persona_visitada, parentesco y acompañantes ────────
     const filteredAcompanantes = Array.isArray(acompanantes)
       ? acompanantes
           .filter((ac) => ac.nombre?.trim() || ac.apellidos?.trim())
@@ -138,6 +152,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       visitante_id: visitanteId,
       firma_url: storagePath,
       acepta_terminos: true,
+      persona_visitada: persona_visitada.trim(),
+      parentesco: parentesco.trim(),
     };
 
     if (filteredAcompanantes.length > 0) {
@@ -148,19 +164,34 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       .from('visitas')
       .insert(visitaPayload);
 
-    // Fallback defensivo: si la columna `acompanantes` no existe aún en Supabase
-    if (errorInsertVisita && visitaPayload.acompanantes) {
+    // Fallback defensivo en caso de columnas pendientes de migración en Supabase
+    if (errorInsertVisita) {
       console.warn(
-        '[POST /api/visitantes] Reintentando inserción sin columna acompanantes:',
-        errorInsertVisita
+        '[POST /api/visitantes] Intento con todas las columnas falló. Aplicando fallback defensivo:',
+        errorInsertVisita.message
       );
-      delete visitaPayload.acompanantes;
-      const retry = await supabaseAdmin.from('visitas').insert(visitaPayload);
-      errorInsertVisita = retry.error;
+
+      // Si falló por acompanantes, probar sin acompanantes
+      if (visitaPayload.acompanantes) {
+        delete visitaPayload.acompanantes;
+        const retry1 = await supabaseAdmin.from('visitas').insert(visitaPayload);
+        errorInsertVisita = retry1.error;
+      }
+
+      // Si sigue fallando (ej. faltan columnas persona_visitada / parentesco), usar payload mínimo
+      if (errorInsertVisita) {
+        const minimalPayload = {
+          visitante_id: visitanteId,
+          firma_url: storagePath,
+          acepta_terminos: true,
+        };
+        const retryMinimal = await supabaseAdmin.from('visitas').insert(minimalPayload);
+        errorInsertVisita = retryMinimal.error;
+      }
     }
 
     if (errorInsertVisita) {
-      console.error('[POST /api/visitantes] Error insertando visita:', errorInsertVisita);
+      console.error('[POST /api/visitantes] Error final insertando visita:', errorInsertVisita);
       return NextResponse.json(
         { error: 'Error interno del servidor' },
         { status: 500 }
@@ -175,7 +206,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   } catch (error: unknown) {
     console.error('[POST /api/visitantes] Error inesperado:', error);
     return NextResponse.json(
-      { error: 'Error interno del servidor' },
+      { error: error instanceof Error ? error.message : 'Error interno del servidor' },
       { status: 500 }
     );
   }

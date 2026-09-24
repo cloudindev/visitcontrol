@@ -89,7 +89,13 @@ export default function AdminDashboard({ initialVisits }: AdminDashboardProps) {
         )
       );
 
-      const matchSearch = matchMain || matchAcompanante;
+      // Comprobar también si la persona visitada o parentesco coincide
+      const matchPersona = !query || (
+        (visit.persona_visitada || "").toLowerCase().includes(query) ||
+        (visit.parentesco || "").toLowerCase().includes(query)
+      );
+
+      const matchSearch = matchMain || matchAcompanante || matchPersona;
 
       // 2. Filtrar por fecha
       let matchDate = true;
@@ -244,6 +250,7 @@ export default function AdminDashboard({ initialVisits }: AdminDashboardProps) {
                     <th className="px-6 py-4">Salida</th>
                     <th className="px-6 py-4">Visitante</th>
                     <th className="px-6 py-4">DNI</th>
+                    <th className="px-6 py-4">Visita a</th>
                     <th className="px-6 py-4">Acompañantes</th>
                     <th className="px-6 py-4">Firma Digital</th>
                   </tr>
@@ -293,6 +300,24 @@ export default function AdminDashboard({ initialVisits }: AdminDashboardProps) {
                       {/* DNI Principal */}
                       <td className="px-6 py-5 font-mono tracking-wider text-gray-800 whitespace-nowrap">
                         {visit.visitante?.dni || "—"}
+                      </td>
+
+                      {/* Persona a la que visita y parentesco */}
+                      <td className="px-6 py-5">
+                        {visit.persona_visitada ? (
+                          <div>
+                            <p className="font-semibold text-gray-800">
+                              {visit.persona_visitada}
+                            </p>
+                            {visit.parentesco && (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200 mt-0.5">
+                                {visit.parentesco}
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-gray-400 text-xs italic">—</span>
+                        )}
                       </td>
 
                       {/* Acompañantes */}

@@ -36,6 +36,8 @@ interface FormState {
   dni: string;
   nombre: string;
   apellidos: string;
+  persona_visitada: string;
+  parentesco: string;
 }
 
 export interface AcompananteItem {
@@ -49,6 +51,8 @@ interface FormErrors {
   dni?: string;
   nombre?: string;
   apellidos?: string;
+  persona_visitada?: string;
+  parentesco?: string;
   firma?: string;
   general?: string;
 }
@@ -64,6 +68,8 @@ export default function RegistroPage() {
     dni: "",
     nombre: "",
     apellidos: "",
+    persona_visitada: "",
+    parentesco: "",
   });
 
   // Lista dinámica de acompañantes
@@ -127,19 +133,20 @@ export default function RegistroPage() {
 
   /** Manejador de cambios en los campos principales */
   const handleMainChange = useCallback(
-    (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setForm((prev) => ({ ...prev, [field]: value }));
-      setErrors((prev) => ({ ...prev, [field]: undefined, general: undefined }));
+    (field: keyof FormState) =>
+      (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const value = e.target.value;
+        setForm((prev) => ({ ...prev, [field]: value }));
+        setErrors((prev) => ({ ...prev, [field]: undefined, general: undefined }));
 
-      if (field === "dni") {
-        setIsReturningVisitor(false);
-        // Si el usuario introduce un DNI con formato completo (9 caracteres), consultar proactivamente
-        if (value.trim().length >= 9 && validateDocumento(value)) {
-          checkExistingDni(value);
+        if (field === "dni") {
+          setIsReturningVisitor(false);
+          // Si el usuario introduce un DNI con formato completo (9 caracteres), consultar proactivamente
+          if (value.trim().length >= 9 && validateDocumento(value)) {
+            checkExistingDni(value);
+          }
         }
-      }
-    },
+      },
     [checkExistingDni]
   );
 
@@ -198,6 +205,8 @@ export default function RegistroPage() {
 
     if (!form.nombre.trim()) errs.nombre = "El nombre es obligatorio";
     if (!form.apellidos.trim()) errs.apellidos = "Los apellidos son obligatorios";
+    if (!form.persona_visitada.trim()) errs.persona_visitada = "Indique la persona a la que visita";
+    if (!form.parentesco.trim()) errs.parentesco = "Seleccione el parentesco";
 
     if (signatureEmpty || signatureRef.current?.isEmpty()) {
       errs.firma = "La firma es obligatoria";
@@ -238,6 +247,8 @@ export default function RegistroPage() {
             dni: form.dni.trim(),
             nombre: form.nombre.trim(),
             apellidos: form.apellidos.trim(),
+            persona_visitada: form.persona_visitada.trim(),
+            parentesco: form.parentesco.trim(),
             firma,
             acompanantes: validAcompanantes,
           }),
@@ -360,6 +371,51 @@ export default function RegistroPage() {
                   />
                   {errors.apellidos && (
                     <p className="text-danger text-sm mt-1">{errors.apellidos}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* ── Fila 2: Persona que visita + Parentesco ── */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                {/* Persona que visita */}
+                <div>
+                  <label htmlFor="persona_visitada" className="field-label mb-1 block">
+                    Persona que visita <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    id="persona_visitada"
+                    type="text"
+                    value={form.persona_visitada}
+                    onChange={handleMainChange("persona_visitada")}
+                    className={`input-field ${errors.persona_visitada ? "input-error" : ""}`}
+                    placeholder="Nombre del residente o persona a la que visita"
+                    autoComplete="off"
+                  />
+                  {errors.persona_visitada && (
+                    <p className="text-danger text-sm mt-1">{errors.persona_visitada}</p>
+                  )}
+                </div>
+
+                {/* Parentesco */}
+                <div>
+                  <label htmlFor="parentesco" className="field-label mb-1 block">
+                    Parentesco <span className="text-danger">*</span>
+                  </label>
+                  <select
+                    id="parentesco"
+                    value={form.parentesco}
+                    onChange={handleMainChange("parentesco")}
+                    className={`input-field ${errors.parentesco ? "input-error" : ""}`}
+                  >
+                    <option value="">Seleccione parentesco...</option>
+                    <option value="Hija/hijo">Hija/hijo</option>
+                    <option value="Hermana/hermano">Hermana/hermano</option>
+                    <option value="Esposa/esposo">Esposa/esposo</option>
+                    <option value="Otro familiar">Otro familiar</option>
+                    <option value="Amistad">Amistad</option>
+                  </select>
+                  {errors.parentesco && (
+                    <p className="text-danger text-sm mt-1">{errors.parentesco}</p>
                   )}
                 </div>
               </div>
@@ -494,6 +550,8 @@ export default function RegistroPage() {
                   !form.dni.trim() ||
                   !form.nombre.trim() ||
                   !form.apellidos.trim() ||
+                  !form.persona_visitada.trim() ||
+                  !form.parentesco.trim() ||
                   signatureEmpty
                 }
                 className="btn btn-primary w-full text-xl py-3.5 disabled:opacity-40 disabled:cursor-not-allowed shadow-md"
