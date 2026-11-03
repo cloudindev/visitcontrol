@@ -266,15 +266,26 @@ export default function AdminDashboard({ initialVisits }: AdminDashboardProps) {
                       {/* Hora de Salida o Estado */}
                       <td className="px-6 py-5 whitespace-nowrap">
                         {visit.fecha_salida ? (
-                          <div className="flex flex-col">
-                            <span className="font-semibold text-gray-800">
-                              {formatTimeOnly(visit.fecha_salida)}
-                            </span>
-                            <span className="text-xs text-gray-400">
-                              {new Date(visit.fecha_salida).toLocaleDateString("es-ES", {
-                                dateStyle: "short",
-                              })}
-                            </span>
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-semibold text-gray-800">
+                                {formatTimeOnly(visit.fecha_salida)}
+                              </span>
+                              <span className="text-xs text-gray-400">
+                                {new Date(visit.fecha_salida).toLocaleDateString("es-ES", {
+                                  dateStyle: "short",
+                                })}
+                              </span>
+                            </div>
+                            {visit.residente_sale ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300 w-fit">
+                                <span>⚠️</span> Salida con residente
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-gray-100 text-gray-600 w-fit">
+                                Solo visitantes
+                              </span>
+                            )}
                           </div>
                         ) : (
                           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
