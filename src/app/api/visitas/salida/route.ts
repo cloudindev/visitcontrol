@@ -138,35 +138,30 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // ── 4. Si la acción es 'confirmar', registrar la salida ───────────────
     const nowIso = new Date().toISOString();
 
-    const updatePayload: Record<string, unknown> = {
-      fecha_salida: nowIso,
-      residente_sale: Boolean(residente_sale),
-    };
-
-    if (personas_salida && Array.isArray(personas_salida)) {
-      updatePayload.personas_salida = personas_salida;
-    }
-
+    // 4.1 Intentar registrar fecha_salida y residente_sale
     let { error: errorUpdate } = await supabaseAdmin
       .from('visitas')
-      .update(updatePayload)
+      .update({
+        fecha_salida: nowIso,
+        residente_sale: Boolean(residente_sale),
+      })
       .eq('id', rawVisita.id);
 
-    // Fallback defensivo si residente_sale o personas_salida no existen aún en Supabase
+    // 4.2 Fallback defensivo si residente_sale no existe aún en Supabase:
+    // Al menos no bloquear la salida del visitante
     if (errorUpdate) {
       console.warn(
-        '[POST /api/visitas/salida] Reintentando update solo con fecha_salida por esquema:',
-        errorUpdate.message
+        '[POST /api/visitas/salida] Falló update con residente_sale (' +
+          errorUpdate.message +
+          '). Reintentando solo con fecha_salida:'
       );
       const retry = await supabaseAdmin
         .from('visitas')
         .update({ fecha_salida: nowIso })
         .eq('id', rawVisita.id);
-      errorUpdate = retry.error;
-    }
-
-    if (errorUpdate) {
-      console.warn('[POST /api/visitas/salida] Aviso final al actualizar fecha_salida:', errorUpdate);
+      if (retry.error) {
+        console.error('[POST /api/visitas/salida] Error en fallback de fecha_salida:', retry.error);
+      }
     }
 
     return NextResponse.json({
