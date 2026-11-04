@@ -9,9 +9,18 @@ export const metadata: Metadata = {
   title: "Registro de Visitas — Residencia de Mayores",
   description:
     "Sistema de registro de visitas para la Residencia de Mayores. Registre su visita de forma rápida y sencilla.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "VisitControl",
+  },
   icons: {
     icon: "/images/favicon-residencial-sanesteban.png",
-    apple: "/images/favicon-residencial-sanesteban.png",
+    apple: "/images/icon-192.png",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
   },
 };
 
@@ -19,12 +28,15 @@ export const metadata: Metadata = {
  * Viewport config para modo kiosco:
  * - Deshabilitamos zoom del usuario (user-scalable=no)
  * - Scale fijo a 1 para evitar inconsistencias en tablet
+ * - viewportFit cover para aprovechar toda la pantalla
  */
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#1E40AF",
 };
 
 /**
