@@ -39,6 +39,8 @@ export interface VisitaData {
   created_at: string;
   fecha_salida?: string | null;
   residente_sale?: boolean | null;
+  residente_regresado?: boolean | null;
+  fecha_regreso_residente?: string | null;
   persona_visitada?: string | null;
   parentesco?: string | null;
   acompanantes?: AcompananteInfo[] | null;
@@ -54,6 +56,8 @@ interface RawDBVisita {
   created_at: string;
   fecha_salida?: string | null;
   residente_sale?: boolean | null;
+  residente_regresado?: boolean | null;
+  fecha_regreso_residente?: string | null;
   persona_visitada?: string | null;
   parentesco?: string | null;
   acompanantes?: unknown;
@@ -143,6 +147,8 @@ export default async function AdminPage() {
         created_at: visit.created_at,
         fecha_salida: visit.fecha_salida || null,
         residente_sale: visit.residente_sale ? true : false,
+        residente_regresado: visit.residente_regresado ? true : false,
+        fecha_regreso_residente: visit.fecha_regreso_residente || null,
         persona_visitada: visit.persona_visitada || null,
         parentesco: visit.parentesco || null,
         acompanantes,
